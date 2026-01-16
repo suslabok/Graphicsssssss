@@ -68,22 +68,10 @@ export const createEducationalLandscape = (THREE, scene) => {
     const height = terrainVertices.getY(i);
     let r, g, b;
 
-    // Ocean area (right side, x > 55) - light sandy beach color (only at ocean edge)
-    if (x > 55) {
-      r = 0.92 + Math.random() * 0.05;
-      g = 0.88 + Math.random() * 0.08;
-      b = 0.75 + Math.random() * 0.1;
-    }
-    // Plains and orange area (x: 20-55) - NOW MAKE GREEN like hills
-    else if (x > 20) {
-      r = 0.35 + Math.random() * 0.08;
-      g = 0.55 + Math.random() * 0.1;
-      b = 0.25 + Math.random() * 0.05;
-    }
-    // Hills area with trees (x: -25 to 20) - rich vibrant green
-    else if (x > -25) {
+    // ALL land area - make it green (ocean will cover the right side anyway)
+    if (x > -25) {
       if (height < 6) {
-        // Lower hills - bright green
+        // Lower areas - bright green
         r = 0.3 + Math.random() * 0.08;
         g = 0.6 + Math.random() * 0.1;
         b = 0.2 + Math.random() * 0.05;
@@ -139,7 +127,7 @@ export const createEducationalLandscape = (THREE, scene) => {
   // Add 3D volumetric hills for better visibility from all angles
   const hillsGroup = new THREE.Group();
 
-  // Create hills ONLY on land - cover entire land area, STOP before ocean at x: 60
+  // Create hills ONLY on land - cover entire land area, STOP before ocean
   const hillPositions = [
     // Main green hills area (x: -25 to 20)
     { x: -22, z: 0, radius: 22, height: 12 },
@@ -157,19 +145,18 @@ export const createEducationalLandscape = (THREE, scene) => {
     { x: 12, z: 20, radius: 18, height: 9 },
     { x: 15, z: -5, radius: 20, height: 10 },
     { x: 18, z: 12, radius: 18, height: 9 },
-    // Extended hills on plains area (x: 20-55)
-    { x: 22, z: 0, radius: 18, height: 8 },
-    { x: 25, z: -25, radius: 17, height: 8 },
-    { x: 28, z: 20, radius: 16, height: 7 },
-    { x: 31, z: -12, radius: 16, height: 7 },
-    { x: 34, z: 15, radius: 15, height: 7 },
-    { x: 37, z: -18, radius: 14, height: 6 },
-    { x: 40, z: 8, radius: 12, height: 6 },
-    { x: 43, z: -15, radius: 14, height: 6 },
-    { x: 46, z: 18, radius: 13, height: 6 },
-    { x: 49, z: -8, radius: 12, height: 5 },
-    { x: 52, z: 12, radius: 12, height: 5 },
-    { x: 55, z: -20, radius: 11, height: 5 },
+    // Fill ALL the orange area with hills (x: 20 to 28)
+    { x: 20, z: -40, radius: 20, height: 8 },
+    { x: 20, z: -20, radius: 18, height: 8 },
+    { x: 20, z: 0, radius: 20, height: 9 },
+    { x: 20, z: 20, radius: 18, height: 8 },
+    { x: 20, z: 40, radius: 20, height: 8 },
+    { x: 24, z: -50, radius: 18, height: 7 },
+    { x: 24, z: -30, radius: 18, height: 7 },
+    { x: 24, z: -10, radius: 20, height: 8 },
+    { x: 24, z: 10, radius: 18, height: 7 },
+    { x: 24, z: 30, radius: 20, height: 8 },
+    { x: 24, z: 50, radius: 18, height: 7 },
   ];
 
   hillPositions.forEach(({ x, z, radius, height }) => {
@@ -242,7 +229,7 @@ export const createEducationalLandscape = (THREE, scene) => {
   }
 
   // Create ocean on the right side with realistic water effects
-  const oceanGeometry = new THREE.BoxGeometry(80, 15, 120);
+  const oceanGeometry = new THREE.BoxGeometry(90, 15, 120);
   const oceanMaterial = new THREE.MeshLambertMaterial({
     color: 0x1e6091,
     transparent: true,
@@ -252,12 +239,12 @@ export const createEducationalLandscape = (THREE, scene) => {
     reflectivity: 0.9,
   });
   const ocean = new THREE.Mesh(oceanGeometry, oceanMaterial);
-  ocean.position.set(60, -3, 0);
+  ocean.position.set(55, -3, 0);
   ocean.receiveShadow = true;
   scene.add(ocean);
 
   // Add water surface waves effect with animation
-  const waveGeometry = new THREE.PlaneGeometry(80, 120, 30, 30);
+  const waveGeometry = new THREE.PlaneGeometry(90, 120, 30, 30);
   const waveMaterial = new THREE.MeshLambertMaterial({
     color: 0x5599cc,
     transparent: true,
@@ -267,7 +254,7 @@ export const createEducationalLandscape = (THREE, scene) => {
   });
   const waves = new THREE.Mesh(waveGeometry, waveMaterial);
   waves.rotation.x = -Math.PI / 2;
-  waves.position.set(60, 5, 0);
+  waves.position.set(55, 5, 0);
   waves.receiveShadow = true;
 
   // Animate waves with more dynamic motion
@@ -377,40 +364,57 @@ export const createEducationalLandscape = (THREE, scene) => {
     }
   }
 
-  // Create forest ONLY on land - trees covering x: -25 to x: 40 (LEAVE OCEAN AREA CLEAR)
+  // Create forest ONLY on land - trees on the green hills area (stop before ocean at x:30)
   const trees = [];
   const treeLocations = [
-    // Trees on main green hills (x: -25 to 20)
+    // Trees on main green hills (x: -25 to 28)
     [-22, 15],
+    [-22, -15],
     [-18, 25],
+    [-18, -30],
     [-15, -10],
+    [-15, 35],
     [-12, 20],
+    [-12, -25],
     [-8, -5],
+    [-8, 40],
     [-5, 30],
+    [-5, -35],
     [-2, -15],
+    [-2, 45],
     [0, 25],
+    [0, -40],
     [3, -20],
+    [3, 35],
     [6, 15],
+    [6, -30],
     [10, -25],
+    [10, 30],
     [12, 20],
+    [12, -35],
     [15, -10],
+    [15, 40],
     [-20, 8],
     [-10, 18],
     [-6, -25],
     [8, 28],
     [5, -8],
     [13, 12],
-    // Trees on plains area (x: 20-40 ONLY - leave ocean clear!)
-    [22, 5],
-    [25, -22],
-    [28, 18],
-    [31, -10],
-    [34, 15],
-    [37, -18],
-    [40, 8],
-    [23, 25],
-    [30, -25],
-    [36, 10],
+    // Trees covering the area near ocean (x: 18 to 26)
+    [18, -45],
+    [18, -20],
+    [18, 5],
+    [18, 30],
+    [18, 50],
+    [22, -40],
+    [22, -15],
+    [22, 10],
+    [22, 35],
+    [22, 55],
+    [25, -35],
+    [25, 0],
+    [25, 25],
+    [25, 45],
   ];
 
   treeLocations.forEach(([x, z]) => {
@@ -732,6 +736,137 @@ export const createEducationalLandscape = (THREE, scene) => {
     new THREE.Vector3(20, -12, 5),
     0x0066cc,
     0.4
+  );
+
+  // Create 3D label signs for each step of the water cycle
+  const createLabelSign = (text, subtext, position, color) => {
+    const signGroup = new THREE.Group();
+
+    // Sign board background
+    const signWidth = 18;
+    const signHeight = 8;
+    const signGeometry = new THREE.PlaneGeometry(signWidth, signHeight);
+    const signMaterial = new THREE.MeshBasicMaterial({
+      color: 0x1e293b,
+      transparent: true,
+      opacity: 0.9,
+      side: THREE.DoubleSide,
+    });
+    const signBoard = new THREE.Mesh(signGeometry, signMaterial);
+    signGroup.add(signBoard);
+
+    // Sign border
+    const borderGeometry = new THREE.PlaneGeometry(
+      signWidth + 0.5,
+      signHeight + 0.5
+    );
+    const borderMaterial = new THREE.MeshBasicMaterial({
+      color: color,
+      transparent: true,
+      opacity: 0.8,
+      side: THREE.DoubleSide,
+    });
+    const border = new THREE.Mesh(borderGeometry, borderMaterial);
+    border.position.z = -0.1;
+    signGroup.add(border);
+
+    // Create canvas for text
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 512;
+    canvas.height = 256;
+
+    // Draw background
+    ctx.fillStyle = "rgba(30, 41, 59, 0.95)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw border
+    ctx.strokeStyle = `#${color.toString(16).padStart(6, "0")}`;
+    ctx.lineWidth = 8;
+    ctx.strokeRect(4, 4, canvas.width - 8, canvas.height - 8);
+
+    // Draw main text
+    ctx.fillStyle = `#${color.toString(16).padStart(6, "0")}`;
+    ctx.font = "bold 48px Segoe UI, Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(text, canvas.width / 2, 80);
+
+    // Draw subtext
+    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+    ctx.font = "24px Segoe UI, Arial, sans-serif";
+
+    // Word wrap subtext
+    const words = subtext.split(" ");
+    let line = "";
+    let y = 140;
+    const maxWidth = 460;
+
+    for (let i = 0; i < words.length; i++) {
+      const testLine = line + words[i] + " ";
+      const metrics = ctx.measureText(testLine);
+      if (metrics.width > maxWidth && i > 0) {
+        ctx.fillText(line, canvas.width / 2, y);
+        line = words[i] + " ";
+        y += 35;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, canvas.width / 2, y);
+
+    // Create texture from canvas
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+
+    // Create textured sign
+    const textSignMaterial = new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
+    const textSign = new THREE.Mesh(signGeometry, textSignMaterial);
+    textSign.position.z = 0.1;
+    signGroup.add(textSign);
+
+    // Position the sign
+    signGroup.position.copy(position);
+    signGroup.rotation.y = Math.PI; // Face the camera
+
+    scene.add(signGroup);
+    return signGroup;
+  };
+
+  // Add step labels at key locations in the scene
+  // 1. Evaporation - near ocean
+  createLabelSign(
+    "1. Evaporation",
+    "Sun heats water in oceans",
+    new THREE.Vector3(55, -15, 55),
+    0x00bfff
+  );
+
+  // 2. Condensation - in the sky near clouds
+  createLabelSign(
+    "2. Condensation",
+    "Water vapor forms clouds",
+    new THREE.Vector3(0, -15, 55),
+    0x87ceeb
+  );
+
+  // 3. Precipitation - over land
+  createLabelSign(
+    "3. Precipitation",
+    "Water falls as rain when clouds get heavy",
+    new THREE.Vector3(-30, -15, 55),
+    0x4169e1
+  );
+
+  // 4. Collection - where water gathers
+  createLabelSign(
+    "4. Collection",
+    "Water gathers in rivers, lakes and oceans",
+    new THREE.Vector3(-70, -15, 55),
+    0x1e90ff
   );
 
   landscape.trees = treeLocations;

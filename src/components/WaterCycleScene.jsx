@@ -19,7 +19,7 @@ import {
   updateGroundwater,
 } from "./ParticleSystem";
 
-const WaterCycleScene = ({ isPlaying, cameraView }) => {
+const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
   const rendererRef = useRef(null);
@@ -27,6 +27,12 @@ const WaterCycleScene = ({ isPlaying, cameraView }) => {
   const cameraRef = useRef(null);
   const controlsRef = useRef(null);
   const particleSystemsRef = useRef(null);
+  const activeStepRef = useRef(activeStep);
+
+  // Update the ref when activeStep changes
+  useEffect(() => {
+    activeStepRef.current = activeStep;
+  }, [activeStep]);
 
   useEffect(() => {
     // Store container reference at the beginning of the effect
@@ -137,16 +143,16 @@ const WaterCycleScene = ({ isPlaying, cameraView }) => {
     scene.fog = new THREE.Fog(0x87ceeb, 150, 500);
     sceneRef.current = scene;
 
-    // Create camera positioned for TOP-DOWN view to see entire layout
+    // Create camera positioned for SIDE view (default view)
     const camera = new THREE.PerspectiveCamera(
       60,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
     );
-    // Position camera HIGH ABOVE looking straight down - bird's eye view
-    camera.position.set(0, 150, 0); // High above the scene
-    camera.lookAt(0, 0, 0); // Looking straight down at center
+    // Position camera for side view - see the cross-section with elevation
+    camera.position.set(0, 35, 120);
+    camera.lookAt(0, 15, 0);
     cameraRef.current = camera;
 
     // Create renderer with enhanced visual quality
@@ -180,7 +186,7 @@ const WaterCycleScene = ({ isPlaying, cameraView }) => {
       controls.screenSpacePanning = false;
       controls.minPolarAngle = 0; // Allow looking straight down
       controls.maxPolarAngle = Math.PI / 1.5; // Can tilt camera
-      controls.target.set(0, 0, 0); // Center of scene
+      controls.target.set(0, 15, 0); // Target for side view
       controlsRef.current = controls;
     }
 
@@ -241,18 +247,90 @@ const WaterCycleScene = ({ isPlaying, cameraView }) => {
       const transpRate = 0.35; // Moderate transpiration rate
       const condensRate = 0.5; // Moderate condensation rate
 
-      // Update all particle systems
-      updateWaterParticles(waterParticles);
-      processEvaporation(waterParticles, vaporParticles, evapRate);
-      processTranspiration(treeLocations, vaporParticles, transpRate);
-      updateVaporMovement(vaporParticles, clouds, condensRate);
-      updateClouds(clouds, precipitationParticles);
-      updatePrecipitation(
-        precipitationParticles,
-        waterParticles,
-        groundwaterParticles
-      );
-      updateGroundwater(groundwaterParticles, waterParticles);
+      const currentStep = activeStepRef.current;
+
+      // Update particle systems based on active step
+      if (currentStep === "all") {
+        // Run all steps
+        updateWaterParticles(waterParticles);
+        processEvaporation(waterParticles, vaporParticles, evapRate);
+        processTranspiration(treeLocations, vaporParticles, transpRate);
+        updateVaporMovement(vaporParticles, clouds, condensRate);
+        updateClouds(clouds, precipitationParticles);
+        updatePrecipitation(
+          precipitationParticles,
+          waterParticles,
+          groundwaterParticles
+        );
+        updateGroundwater(groundwaterParticles, waterParticles);
+      } else if (currentStep === "evaporation") {
+        // Only evaporation - water turns to vapor
+        updateWaterParticles(waterParticles);
+        processEvaporation(waterParticles, vaporParticles, evapRate * 2);
+        processTranspiration(treeLocations, vaporParticles, transpRate * 2);
+        // Move vapor up slowly
+        vaporParticles.forEach((particle) => {
+          if (particle.visible) {
+            particle.position.y += 0.1;
+            if (particle.position.y > 50) {
+              particle.position.y = 5;
+              particle.visible = false;
+            }
+          }
+        });
+      } else if (currentStep === "condensation") {
+        // Condensation - vapor forms clouds
+        updateVaporMovement(vaporParticles, clouds, condensRate * 2);
+        updateClouds(clouds, precipitationParticles, true); // clouds grow but don't precipitate
+        // Keep vapor moving
+        vaporParticles.forEach((particle) => {
+          if (!particle.visible && Math.random() < 0.02) {
+            particle.visible = true;
+            particle.position.set(
+              40 + Math.random() * 40,
+              5 + Math.random() * 5,
+              (Math.random() - 0.5) * 80
+            );
+          }
+        });
+      } else if (currentStep === "precipitation") {
+        // Precipitation - rain falls from clouds
+        updateClouds(clouds, precipitationParticles);
+        updatePrecipitation(
+          precipitationParticles,
+          waterParticles,
+          groundwaterParticles
+        );
+        // Force precipitation
+        precipitationParticles.forEach((particle) => {
+          if (!particle.visible && Math.random() < 0.05) {
+            particle.visible = true;
+            particle.position.set(
+              -30 + Math.random() * 60,
+              35 + Math.random() * 10,
+              (Math.random() - 0.5) * 80
+            );
+          }
+        });
+      } else if (currentStep === "collection") {
+        // Collection - water gathers in oceans, rivers, and groundwater
+        updatePrecipitation(
+          precipitationParticles,
+          waterParticles,
+          groundwaterParticles
+        );
+        updateGroundwater(groundwaterParticles, waterParticles);
+        updateWaterParticles(waterParticles);
+        // Show water particles flowing toward ocean
+        waterParticles.forEach((particle) => {
+          if (particle.visible) {
+            particle.position.x += 0.05;
+            if (particle.position.x > 80) {
+              particle.position.x = -20;
+            }
+          }
+        });
+      }
     }
 
     // Update controls for smooth camera rotation
