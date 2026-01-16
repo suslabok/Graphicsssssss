@@ -4,13 +4,11 @@ import ControlPanel from "./components/ControlPanel";
 import WaterCycleLabels from "./components/WaterCycleLabels";
 
 const WaterCycleSimulator = () => {
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [cameraView, setCameraView] = useState("side");
+  const [cameraView, setCameraView] = useState("angle");
   const [activeStep, setActiveStep] = useState("all");
 
   const handleStepClick = (stepId) => {
     setActiveStep(stepId);
-    setIsPlaying(true); // Start playing when a step is clicked
   };
 
   return (
@@ -24,16 +22,12 @@ const WaterCycleSimulator = () => {
       }}
     >
       <WaterCycleScene
-        isPlaying={isPlaying}
+        isPlaying={true}
         cameraView={cameraView}
         activeStep={activeStep}
       />
 
-      <ControlPanel
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-        onViewChange={setCameraView}
-      />
+      <ControlPanel onViewChange={setCameraView} />
 
       <WaterCycleLabels activeStep={activeStep} onStepClick={handleStepClick} />
     </div>

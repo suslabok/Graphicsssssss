@@ -27,11 +27,60 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
   const cameraRef = useRef(null);
   const controlsRef = useRef(null);
   const particleSystemsRef = useRef(null);
+  const riverRef = useRef(null);
   const activeStepRef = useRef(activeStep);
+  const previousStepRef = useRef(activeStep);
 
-  // Update the ref when activeStep changes
+  // Update the ref when activeStep changes and reset particles
   useEffect(() => {
     activeStepRef.current = activeStep;
+
+    // Reset particles when step changes
+    if (previousStepRef.current !== activeStep && particleSystemsRef.current) {
+      const { vaporParticles, precipitationParticles, waterParticles, clouds } =
+        particleSystemsRef.current;
+
+      // Reset vapor particles
+      vaporParticles.forEach((v) => {
+        v.active = false;
+        v.position.set(0, -100, 0);
+        v.mesh.position.copy(v.position);
+        v.mesh.material.opacity = 0;
+        v.mesh.scale.setScalar(1);
+      });
+
+      // Reset precipitation particles
+      precipitationParticles.forEach((p) => {
+        p.active = false;
+        p.position.set(0, -100, 0);
+        p.mesh.position.copy(p.position);
+        p.mesh.material.opacity = 0;
+        p.mesh.scale.set(1, 1, 1);
+      });
+
+      // Reset water particles stage
+      waterParticles.forEach((w) => {
+        if (w.stage === "runoff" || w.stage === "collection") {
+          w.stage = "ocean";
+          w.position.set(
+            40 + Math.random() * 45,
+            -0.5 + Math.random() * 0.5,
+            (Math.random() - 0.5) * 70
+          );
+          w.mesh.position.copy(w.position);
+          w.mesh.scale.setScalar(1);
+        }
+      });
+
+      // Reset clouds visibility and position
+      clouds.forEach((cloud, index) => {
+        cloud.mesh.visible = true;
+        cloud.waterContent = 0.3;
+        cloud.mesh.scale.set(1, 1, 1);
+      });
+    }
+
+    previousStepRef.current = activeStep;
   }, [activeStep]);
 
   useEffect(() => {
@@ -139,19 +188,19 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
 
     // Create scene with enhanced visual settings
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87ceeb);
-    scene.fog = new THREE.Fog(0x87ceeb, 150, 500);
+    scene.background = new THREE.Color(0xb5e3f5);
+    scene.fog = new THREE.Fog(0xb5e3f5, 150, 500);
     sceneRef.current = scene;
 
-    // Create camera positioned for SIDE view (default view)
+    // Create camera positioned for ANGLE view (default view)
     const camera = new THREE.PerspectiveCamera(
       60,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
     );
-    // Position camera for side view - see the cross-section with elevation
-    camera.position.set(0, 35, 120);
+    // Position camera for angle view - nice perspective view
+    camera.position.set(80, 60, 80);
     camera.lookAt(0, 15, 0);
     cameraRef.current = camera;
 
@@ -194,6 +243,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
     createLighting(THREE, scene);
     const landscape = createEducationalLandscape(THREE, scene);
     const treeLocations = landscape.trees;
+    riverRef.current = landscape.river;
     createSun(THREE, scene);
 
     // Create particle systems
@@ -233,6 +283,11 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
   const animate = () => {
     animationRef.current = requestAnimationFrame(animate);
 
+    // Animate river (always flows)
+    if (riverRef.current && riverRef.current.userData.animate) {
+      riverRef.current.userData.animate();
+    }
+
     if (isPlaying && particleSystemsRef.current) {
       const {
         waterParticles,
@@ -243,15 +298,19 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
         treeLocations,
       } = particleSystemsRef.current;
 
-      const evapRate = 0.4; // Moderate evaporation rate
-      const transpRate = 0.35; // Moderate transpiration rate
-      const condensRate = 0.5; // Moderate condensation rate
+      const evapRate = 0.4;
+      const transpRate = 0.35;
+      const condensRate = 0.5;
 
       const currentStep = activeStepRef.current;
 
       // Update particle systems based on active step
       if (currentStep === "all") {
-        // Run all steps
+        // Run all steps - complete water cycle
+        // Make all clouds visible
+        clouds.forEach((cloud) => {
+          cloud.mesh.visible = true;
+        });
         updateWaterParticles(waterParticles);
         processEvaporation(waterParticles, vaporParticles, evapRate);
         processTranspiration(treeLocations, vaporParticles, transpRate);
@@ -264,72 +323,408 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
         );
         updateGroundwater(groundwaterParticles, waterParticles);
       } else if (currentStep === "evaporation") {
-        // Only evaporation - water turns to vapor
-        updateWaterParticles(waterParticles);
-        processEvaporation(waterParticles, vaporParticles, evapRate * 2);
-        processTranspiration(treeLocations, vaporParticles, transpRate * 2);
-        // Move vapor up slowly
-        vaporParticles.forEach((particle) => {
-          if (particle.visible) {
-            particle.position.y += 0.1;
-            if (particle.position.y > 50) {
-              particle.position.y = 5;
-              particle.visible = false;
+        // EVAPORATION: Vapor rises from ocean surface
+
+        // Hide precipitation particles (no rain during evaporation)
+        precipitationParticles.forEach((p) => {
+          if (p.active) {
+            p.active = false;
+            p.mesh.material.opacity = 0;
+          }
+        });
+
+        // Only show 1-2 clouds above ocean, hide all others
+        clouds.forEach((cloud, index) => {
+          if (index < 2) {
+            // Show only first 2 clouds above ocean
+            cloud.mesh.visible = true;
+            cloud.mesh.position.x = 50 + index * 20; // Position above ocean
+            cloud.mesh.position.y = 42 + index * 5;
+            cloud.mesh.position.z = (index - 0.5) * 15;
+            // Make clouds white and fluffy
+            cloud.particles.forEach((cp) => {
+              cp.material.color.setRGB(1, 1, 1);
+              cp.material.opacity = 0.85;
+            });
+          } else {
+            // Hide all other clouds
+            cloud.mesh.visible = false;
+          }
+        });
+
+        // Create MANY MORE larger vapor particles rising from ocean
+        if (Math.random() < 0.35) {
+          const vapor = vaporParticles.find((v) => !v.active);
+          if (vapor) {
+            vapor.active = true;
+            vapor.type = "evaporation";
+            // Start from ocean surface (right side)
+            vapor.position.set(
+              40 + Math.random() * 45, // Ocean area (x: 40-85)
+              0.5 + Math.random() * 1.5, // Near water surface
+              (Math.random() - 0.5) * 70
+            );
+            vapor.velocity.y = 0.12 + Math.random() * 0.1; // Rise upward
+            vapor.velocity.x = -0.015; // Slight drift toward land
+            vapor.velocity.z = (Math.random() - 0.5) * 0.02;
+            vapor.mesh.position.copy(vapor.position);
+            vapor.mesh.material.opacity = 0.85;
+            vapor.mesh.material.color.setHex(0x3a7ca5);
+            // Start with larger size
+            vapor.mesh.scale.setScalar(2.5 + Math.random() * 1.5);
+            vapor.age = 0;
+          }
+        }
+
+        // Update rising vapor particles with visible animation
+        vaporParticles.forEach((p) => {
+          if (p.active) {
+            p.age++;
+            p.position.add(p.velocity);
+
+            // Swaying motion as vapor rises
+            p.position.x += Math.sin(p.age * 0.06) * 0.03;
+            p.position.z += Math.cos(p.age * 0.05) * 0.02;
+
+            // Pulsing size effect - keep large
+            const baseScale = 2.5;
+            const scale = baseScale + Math.sin(p.age * 0.08) * 0.8;
+            p.mesh.scale.setScalar(scale);
+
+            // High visibility opacity that slowly fades as it rises
+            p.mesh.material.opacity = Math.max(0.3, 0.9 - p.position.y / 70);
+            p.mesh.position.copy(p.position);
+
+            // Deactivate when too high (reached cloud level)
+            if (p.position.y > 45) {
+              p.active = false;
+              p.position.set(0, -100, 0);
+              p.mesh.position.copy(p.position);
+              p.mesh.material.opacity = 0;
+              p.mesh.scale.setScalar(1);
             }
+          }
+        });
+
+        // Show ocean water with gentle waves
+        waterParticles.forEach((p) => {
+          if (p.position.x > 35) {
+            p.position.y =
+              -0.2 + Math.sin(Date.now() * 0.003 + p.position.x * 0.15) * 0.15;
+            p.mesh.position.copy(p.position);
           }
         });
       } else if (currentStep === "condensation") {
-        // Condensation - vapor forms clouds
-        updateVaporMovement(vaporParticles, clouds, condensRate * 2);
-        updateClouds(clouds, precipitationParticles, true); // clouds grow but don't precipitate
-        // Keep vapor moving
-        vaporParticles.forEach((particle) => {
-          if (!particle.visible && Math.random() < 0.02) {
-            particle.visible = true;
-            particle.position.set(
-              40 + Math.random() * 40,
-              5 + Math.random() * 5,
-              (Math.random() - 0.5) * 80
-            );
+        // CONDENSATION: Clouds form and travel toward mountains
+
+        // Make all clouds visible again
+        // Hide precipitation particles (no rain during condensation)
+        precipitationParticles.forEach((p) => {
+          if (p.active) {
+            p.active = false;
+            p.mesh.material.opacity = 0;
           }
         });
-      } else if (currentStep === "precipitation") {
-        // Precipitation - rain falls from clouds
-        updateClouds(clouds, precipitationParticles);
-        updatePrecipitation(
-          precipitationParticles,
-          waterParticles,
-          groundwaterParticles
-        );
-        // Force precipitation
-        precipitationParticles.forEach((particle) => {
-          if (!particle.visible && Math.random() < 0.05) {
-            particle.visible = true;
-            particle.position.set(
-              -30 + Math.random() * 60,
-              35 + Math.random() * 10,
-              (Math.random() - 0.5) * 80
-            );
+
+        // Make all clouds visible again
+        clouds.forEach((cloud) => {
+          cloud.mesh.visible = true;
+        });
+
+        // Clouds visibly grow and move toward mountains
+        clouds.forEach((cloud) => {
+          cloud.driftPhase += 0.025;
+
+          // Gradually increase water content (cloud forming)
+          cloud.waterContent = Math.min(
+            cloud.maxWaterContent,
+            cloud.waterContent + 0.008
+          );
+
+          // Make clouds visibly grow with water content
+          const growthScale = 0.9 + cloud.waterContent * 0.35;
+          cloud.mesh.scale.set(growthScale, growthScale, growthScale);
+
+          // Update cloud color - darker as they fill with water
+          cloud.particles.forEach((cp) => {
+            const grayness = Math.max(0.55, 1.0 - cloud.waterContent * 0.25);
+            cp.material.color.setRGB(grayness, grayness, grayness + 0.05);
+            cp.material.opacity = 0.75 + cloud.waterContent * 0.15;
+          });
+
+          // Move clouds toward mountains (leftward) - visible movement
+          cloud.mesh.position.x += cloud.speed * 2.0;
+          cloud.mesh.position.y += Math.sin(cloud.driftPhase) * 0.06;
+          cloud.mesh.position.z += Math.cos(cloud.driftPhase * 0.7) * 0.04;
+
+          // Reset clouds that reach mountains back to ocean
+          if (cloud.mesh.position.x < -70) {
+            cloud.mesh.position.x = 75;
+            cloud.waterContent = 0.2;
+            cloud.mesh.scale.set(0.9, 0.9, 0.9);
           }
         });
-      } else if (currentStep === "collection") {
-        // Collection - water gathers in oceans, rivers, and groundwater
-        updatePrecipitation(
-          precipitationParticles,
-          waterParticles,
-          groundwaterParticles
-        );
-        updateGroundwater(groundwaterParticles, waterParticles);
-        updateWaterParticles(waterParticles);
-        // Show water particles flowing toward ocean
-        waterParticles.forEach((particle) => {
-          if (particle.visible) {
-            particle.position.x += 0.05;
-            if (particle.position.x > 80) {
-              particle.position.x = -20;
+
+        // Show some vapor condensing into clouds
+        if (Math.random() < 0.08) {
+          const vapor = vaporParticles.find((v) => !v.active);
+          if (vapor) {
+            // Find a cloud to move toward
+            const targetCloud =
+              clouds[Math.floor(Math.random() * clouds.length)];
+            vapor.active = true;
+            vapor.position.set(
+              targetCloud.mesh.position.x + 20 + Math.random() * 15,
+              targetCloud.mesh.position.y + (Math.random() - 0.5) * 10,
+              targetCloud.mesh.position.z + (Math.random() - 0.5) * 15
+            );
+            vapor.velocity.x = -0.15;
+            vapor.velocity.y = 0.02;
+            vapor.mesh.position.copy(vapor.position);
+            vapor.mesh.material.opacity = 0.5;
+            vapor.mesh.material.color.setHex(0x4a7a9a);
+            vapor.age = 0;
+          }
+        }
+
+        // Update vapor moving toward clouds
+        vaporParticles.forEach((p) => {
+          if (p.active) {
+            p.age++;
+            p.position.add(p.velocity);
+            p.mesh.position.copy(p.position);
+
+            // Find nearest cloud
+            const nearestCloud = clouds.reduce((closest, cloud) => {
+              const dist = p.position.distanceTo(cloud.mesh.position);
+              return dist < (closest.dist || Infinity)
+                ? { cloud, dist }
+                : closest;
+            }, {});
+
+            // Condense into cloud when close
+            if (nearestCloud.cloud && nearestCloud.dist < 12) {
+              p.active = false;
+              p.position.set(0, -100, 0);
+              p.mesh.position.copy(p.position);
+              p.mesh.material.opacity = 0;
+              nearestCloud.cloud.waterContent += 0.25;
+            }
+
+            if (p.age > 150 || p.position.x < -80) {
+              p.active = false;
+              p.position.set(0, -100, 0);
+              p.mesh.position.copy(p.position);
+              p.mesh.material.opacity = 0;
             }
           }
         });
+      } else if (currentStep === "precipitation") {
+        // PRECIPITATION: Heavy rain falls mostly over mountains and hills
+
+        // Hide vapor particles (no evaporation during precipitation)
+        vaporParticles.forEach((v) => {
+          if (v.active) {
+            v.active = false;
+            v.mesh.material.opacity = 0;
+          }
+        });
+
+        // Make all clouds visible
+        clouds.forEach((cloud) => {
+          cloud.mesh.visible = true;
+        });
+
+        // Position clouds over mountain/hill region for rain
+        clouds.forEach((cloud, index) => {
+          cloud.driftPhase += 0.015;
+          cloud.mesh.position.y += Math.sin(cloud.driftPhase) * 0.02;
+
+          // Move clouds toward mountain/hill region (left side: x < 0)
+          if (cloud.mesh.position.x > -50) {
+            cloud.mesh.position.x -= 0.1;
+          }
+
+          // Make clouds very dark (full of water - storm clouds)
+          cloud.particles.forEach((cp) => {
+            cp.material.color.setRGB(0.4, 0.4, 0.45);
+            cp.material.opacity = 0.95;
+          });
+
+          // Rain heavily - more over mountains (x < -30), less over hills (-30 < x < 10)
+          const isOverMountains = cloud.mesh.position.x < -30;
+          const isOverHills =
+            cloud.mesh.position.x >= -30 && cloud.mesh.position.x < 10;
+
+          // Mountain region gets more rain
+          let rainChance = 0.05; // Default low
+          if (isOverMountains) {
+            rainChance = 0.45; // Heavy rain over mountains
+          } else if (isOverHills) {
+            rainChance = 0.25; // Moderate rain over hills
+          }
+
+          const rainCount =
+            Math.random() < rainChance
+              ? isOverMountains
+                ? 3
+                : 2
+              : Math.random() < rainChance * 0.5
+              ? 1
+              : 0;
+
+          for (let i = 0; i < rainCount; i++) {
+            const precip = precipitationParticles.find((p) => !p.active);
+            if (precip) {
+              precip.active = true;
+              // Rain position biased toward mountains/hills
+              const rainX = isOverMountains
+                ? cloud.mesh.position.x + (Math.random() - 0.5) * 20
+                : cloud.mesh.position.x + (Math.random() - 0.5) * 15;
+              precip.position.set(
+                rainX,
+                cloud.mesh.position.y - 4,
+                cloud.mesh.position.z + (Math.random() - 0.5) * 14
+              );
+              precip.velocity.y = -0.5 - Math.random() * 0.3; // Fast falling rain
+              precip.velocity.x = (Math.random() - 0.5) * 0.03;
+              precip.mesh.position.copy(precip.position);
+              precip.mesh.material.opacity = 0.9;
+              precip.mesh.material.color.setHex(0x1a4670);
+              precip.age = 0;
+            }
+          }
+        });
+
+        // Update falling rain with stretch effect
+        precipitationParticles.forEach((p) => {
+          if (p.active) {
+            p.age++;
+            p.position.add(p.velocity);
+
+            // Stretch rain drops for falling effect
+            p.mesh.scale.set(1, 1.8 + Math.abs(p.velocity.y) * 0.6, 1);
+
+            // Slight opacity variation
+            p.mesh.material.opacity = 0.75 + Math.sin(p.age * 0.2) * 0.2;
+            p.mesh.position.copy(p.position);
+
+            // Rain hits ground - different levels for mountains vs hills
+            const groundLevel =
+              p.position.x < -40 ? 8 : p.position.x < 0 ? 3 : 1;
+            if (p.position.y <= groundLevel) {
+              p.active = false;
+              p.position.set(0, -100, 0);
+              p.mesh.position.copy(p.position);
+              p.mesh.material.opacity = 0;
+              p.mesh.scale.set(1, 1, 1);
+            }
+          }
+        });
+      } else if (currentStep === "collection") {
+        // COLLECTION: Water flows through rivers to ocean - EXTREMELY VISIBLE
+
+        // Hide clouds during collection to focus on river
+        clouds.forEach((cloud) => {
+          cloud.mesh.visible = false;
+        });
+
+        // Hide vapor particles
+        vaporParticles.forEach((v) => {
+          if (v.active) {
+            v.active = false;
+            v.mesh.material.opacity = 0;
+          }
+        });
+
+        // Hide precipitation particles
+        precipitationParticles.forEach((p) => {
+          if (p.active) {
+            p.active = false;
+            p.mesh.material.opacity = 0;
+          }
+        });
+
+        // Create MANY MORE water particles on mountains that flow to ocean (river)
+        // Spawn MANY particles per frame for VERY dense river
+        const spawnCount = Math.random() < 0.7 ? 5 : 4;
+        for (let i = 0; i < spawnCount; i++) {
+          const water = waterParticles.find(
+            (w) =>
+              w.stage === "evaporated" ||
+              (w.stage === "collection" && w.position.x > 55) ||
+              w.position.y < -50
+          );
+          if (water) {
+            water.stage = "runoff";
+            // Start from mountain area (left side) - concentrated river source
+            water.position.set(
+              -60 + Math.random() * 10, // Mountains area (x: -60 to -50)
+              8 + Math.random() * 6, // Elevated on mountain
+              -3 + Math.random() * 6 // Very narrow river path
+            );
+            water.mesh.position.copy(water.position);
+            water.mesh.material.opacity = 1.0;
+            water.mesh.material.color.setHex(0x2196f3); // Very bright blue
+            // Make river particles MUCH larger and visible
+            water.mesh.scale.setScalar(2.5 + Math.random() * 1.0);
+          }
+        }
+
+        // Water flows from mountains to ocean (VERY CLEAR river effect)
+        waterParticles.forEach((p) => {
+          if (p.stage === "runoff") {
+            // Flow toward ocean (rightward) - consistent river speed
+            p.position.x += 0.3 + Math.random() * 0.05;
+
+            // Follow terrain - descend from mountains to ocean in a clear path
+            const progress = (p.position.x + 65) / 110; // 0 at mountains, 1 at ocean
+            const mountainHeight = 10;
+            const terrainHeight = Math.max(
+              0.8,
+              mountainHeight * (1 - progress * 1.1)
+            );
+            p.position.y = terrainHeight + Math.sin(p.position.x * 0.1) * 0.2;
+
+            // River meandering effect - gentle S-curves
+            const baseZ = 0; // Center line
+            const meander = Math.sin(p.position.x * 0.04) * 6;
+            p.position.z = baseZ + meander;
+
+            p.mesh.position.copy(p.position);
+
+            // Very bright flowing water effect with sparkle
+            const shimmer =
+              0.95 + Math.sin(Date.now() * 0.01 + p.position.x * 0.3) * 0.05;
+            p.mesh.material.opacity = shimmer;
+
+            // Bright color with sparkle variation
+            const sparkle = Math.sin(Date.now() * 0.015 + p.position.x * 0.5);
+            if (sparkle > 0.3) {
+              p.mesh.material.color.setHex(0x64b5f6); // Light blue sparkle
+            } else if (sparkle > 0) {
+              p.mesh.material.color.setHex(0x42a5f5); // Medium blue
+            } else {
+              p.mesh.material.color.setHex(0x2196f3); // Base bright blue
+            }
+
+            // Reached ocean - become collection
+            if (p.position.x > 40) {
+              p.stage = "collection";
+              p.position.y = -0.2;
+              p.mesh.material.color.setHex(0x1565c0);
+              p.mesh.scale.setScalar(1); // Reset scale
+            }
+          } else if (p.stage === "collection") {
+            // Gentle ocean movement
+            p.position.y =
+              -0.2 + Math.sin(Date.now() * 0.002 + p.position.x * 0.15) * 0.12;
+            p.mesh.position.copy(p.position);
+          }
+        });
+
+        // Also show groundwater movement
+        updateGroundwater(groundwaterParticles, waterParticles);
       }
     }
 

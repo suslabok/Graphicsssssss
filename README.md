@@ -5,10 +5,13 @@ A 3D interactive water cycle simulator built with React and Three.js. This educa
 ## 📸 Features
 
 - **3D Interactive Visualization**: Real-time 3D rendering of the water cycle using Three.js
-- **Multiple Camera Views**: Switch between different perspectives (side view, top view, and more)
-- **Play/Pause Controls**: Control simulation playback
-- **Particle System**: Dynamic particle system to visualize water movement
-- **3D Models**: Includes low-poly tree and mountain models for realistic environment
+- **Interactive Step Labels**: Click on any water cycle step (Evaporation, Condensation, Precipitation, Collection) to focus on that specific phase animation
+- **Multiple Camera Views**: Switch between different perspectives (angle, side, top, front views) - defaults to angle view
+- **Flowing River**: Animated river flowing from mountains to ocean for the collection phase
+- **Always-Playing Simulation**: Continuous water cycle animation with no pause needed
+- **Realistic Landscape**: Mountains with snow caps, rock details, hills, trees, and ocean
+- **Particle Systems**: Dynamic particles for water droplets, vapor, clouds, precipitation, and groundwater
+- **3D Models**: Includes low-poly tree models with fallback simple trees
 - **Responsive Design**: Fullscreen interactive experience
 
 ## 🚀 Getting Started
@@ -72,10 +75,14 @@ water-cycle-simulator/
 
 ## 🎮 Usage
 
-1. **Start the simulation**: Click the play button to begin the water cycle animation
-2. **Pause/Resume**: Use the play/pause button to control the simulation
-3. **Change View**: Switch between different camera angles using the view controls
-4. **Observe the cycle**: Watch as water particles move through evaporation, condensation, precipitation, and collection phases
+1. **View the simulation**: The water cycle animation runs continuously showing all phases
+2. **Click on step labels**: Click any of the 4 step labels to focus on that specific phase:
+   - **1. Evaporation**: Watch water vapor rise from the ocean surface
+   - **2. Condensation**: See vapor form into clouds in the atmosphere
+   - **3. Precipitation**: Observe rain falling from clouds onto mountains and land
+   - **4. Collection**: See water flowing through the river back to the ocean
+3. **Change Camera View**: Use the control buttons to switch between angle, side, top, and front views
+4. **Explore**: Use mouse to rotate the 3D scene and explore the environment
 
 ## 📚 Key Components
 
@@ -83,35 +90,45 @@ water-cycle-simulator/
 
 The main 3D scene component that handles:
 
-- Three.js scene setup
-- Camera management and switching
-- Particle system rendering
-- 3D model loading and positioning
-- Animation loop
+- Three.js scene setup and rendering
+- Camera management with multiple view angles (angle, side, top, front)
+- OrbitControls for user interaction
+- Particle system animation and step-based behavior
+- River animation integration
+- Shadow and lighting configuration
 
 ### ControlPanel.jsx
 
 User interface controls including:
 
-- Play/Pause button
-- Camera view selection
-- Information display
+- Camera view selection buttons (Angle, Side, Top, Front)
+- Clean, modern UI design
 
 ### ParticleSystem.js
 
-Manages water particle behavior:
+Manages water particle behavior for each phase:
 
-- Particle creation and movement
-- Physics simulation
-- Lifecycle management
+- **Water Particles**: Ocean surface water droplets (200 particles)
+- **Vapor Particles**: Rising water vapor (150 particles)
+- **Clouds**: Fluffy cloud formations that respond to condensation
+- **Precipitation Particles**: Rain droplets falling on mountains (120 particles)
+- **Groundwater Particles**: Water seeping into the ground
+- Step-specific particle activation and animations
 
 ### EnvironmentObjects.js
 
-Handles 3D environment:
+Creates the complete 3D landscape:
 
-- Model loading (trees, mountains)
-- Object positioning
-- Lighting setup
+- **Terrain**: Height-mapped ground with vertex colors
+- **Mountains**: 10 realistic mountains with snow caps, rocks, minerals, and ledges
+- **Hills**: 78 rolling hills extending from mountains to beach
+- **Trees**: 75+ trees using OBJ models with fallback simple trees
+- **Ocean**: Animated wave surface with transparency
+- **River**: Flowing river with banks, rocks, and waterfall
+- **Labels**: Interactive educational signs for each water cycle step
+- **Flow Arrows**: Visual indicators showing water movement direction
+- **Sun**: Glowing sun with corona and rays
+- **Lighting**: Ambient, directional, hemisphere, and fill lights
 
 ## 🔧 Available Scripts
 
@@ -137,14 +154,25 @@ Edit `src/components/ParticleSystem.js` to:
 
 - Adjust particle speed and behavior
 - Change evaporation/precipitation rates
-- Modify particle appearance
+- Modify particle colors (currently dark blue shades)
+- Customize particle counts
 
-### Changing 3D Models
+### Changing the Landscape
 
-Replace or add 3D model files in the `public/` directory:
+Edit `src/components/EnvironmentObjects.js` to:
 
-- Supported formats: `.obj`, `.mtl`
-- Update references in `src/components/EnvironmentObjects.js`
+- Add or modify mountains, hills, and trees
+- Adjust river path and appearance
+- Change terrain colors and elevation
+- Modify label text and positions
+
+### Camera Views
+
+Edit `src/components/WaterCycleScene.jsx` to:
+
+- Add new camera positions
+- Modify default view (currently "angle")
+- Adjust OrbitControls settings
 
 ### Styling
 
@@ -180,10 +208,18 @@ For issues, questions, or suggestions, please open an issue on GitHub.
 
 This simulator is designed to help students understand:
 
-- Water cycle phases: evaporation, condensation, precipitation, collection
-- Weather patterns and atmospheric processes
-- Climate and environmental science concepts
-- 3D visualization and interactive learning
+- **Water Cycle Phases**: Interactive visualization of evaporation, condensation, precipitation, and collection
+- **Weather Patterns**: How water moves through the atmosphere
+- **Climate Science**: The continuous cycle that sustains life on Earth
+- **3D Visualization**: Learn through interactive exploration
+- **Geographic Features**: Mountains, rivers, oceans, and their role in the water cycle
+
+### The Four Steps
+
+1. **Evaporation** ☀️ - Sun heats water in oceans, causing it to rise as vapor
+2. **Condensation** ☁️ - Water vapor cools and forms clouds in the atmosphere
+3. **Precipitation** 🌧️ - Water falls as rain when clouds become heavy
+4. **Collection** 🌊 - Water gathers in rivers, lakes, and flows back to oceans
 
 ---
 

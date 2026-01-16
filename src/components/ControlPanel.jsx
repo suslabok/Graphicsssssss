@@ -1,6 +1,6 @@
 import React from "react";
 
-const ControlPanel = ({ isPlaying, setIsPlaying, onViewChange }) => {
+const ControlPanel = ({ onViewChange }) => {
   return (
     <div
       style={{
@@ -30,29 +30,6 @@ const ControlPanel = ({ isPlaying, setIsPlaying, onViewChange }) => {
       >
         💧 Water Cycle Simulator
       </h2>
-
-      <div style={{ marginBottom: "15px" }}>
-        <button
-          onClick={() => setIsPlaying(!isPlaying)}
-          style={{
-            background: isPlaying
-              ? "linear-gradient(135deg, #f06595 0%, #e64980 100%)"
-              : "linear-gradient(135deg, #51cf66 0%, #37b24d 100%)",
-            color: "#fff",
-            border: "none",
-            padding: "14px 22px",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "16px",
-            fontWeight: "600",
-            width: "100%",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-            transition: "all 0.3s ease",
-          }}
-        >
-          {isPlaying ? "⏸ Pause Simulation" : "▶ Start Simulation"}
-        </button>
-      </div>
 
       {/* Camera View Buttons */}
       <div style={{ marginBottom: "20px" }}>
@@ -139,15 +116,6 @@ const ControlPanel = ({ isPlaying, setIsPlaying, onViewChange }) => {
             🎬 Angle View
           </button>
         </div>
-      </div>
-
-      <div style={{ marginTop: "15px", fontSize: "11px", color: "#999" }}>
-        💡 <strong>Tips:</strong>
-        <br />
-        • Watch the water cycle in action!
-        <br />
-        • Use different views to see all angles
-        <br />• Rotate with mouse to explore
       </div>
     </div>
   );

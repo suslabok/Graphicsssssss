@@ -1,18 +1,16 @@
-// Enhanced ParticleSystem.js - Clear water cycle visualization with step-by-step processes
-
-export const createWaterParticles = (THREE, scene, count = 120) => {
+export const createWaterParticles = (THREE, scene, count = 200) => {
   const waterParticles = [];
   for (let i = 0; i < count; i++) {
     const particle = {
       mesh: new THREE.Mesh(
-        new THREE.SphereGeometry(0.25, 12, 12),
+        new THREE.SphereGeometry(0.35, 12, 12),
         new THREE.MeshLambertMaterial({
-          color: 0x0077ff,
+          color: 0x1565c0,
           transparent: true,
-          opacity: 0.9,
-          emissive: 0x003388,
-          emissiveIntensity: 0.3,
-          reflectivity: 0.8,
+          opacity: 0.95,
+          emissive: 0x0d47a1,
+          emissiveIntensity: 0.4,
+          reflectivity: 0.9,
         })
       ),
       position: new THREE.Vector3(
@@ -35,19 +33,19 @@ export const createWaterParticles = (THREE, scene, count = 120) => {
   return waterParticles;
 };
 
-export const createVaporParticles = (THREE, scene, count = 80) => {
+export const createVaporParticles = (THREE, scene, count = 150) => {
   const vaporParticles = [];
   for (let i = 0; i < count; i++) {
     const particle = {
       mesh: new THREE.Mesh(
-        new THREE.SphereGeometry(0.18, 8, 8),
+        new THREE.SphereGeometry(0.4, 10, 10),
         new THREE.MeshLambertMaterial({
-          color: 0x87ceeb,
+          color: 0x3a7ca5,
           transparent: true,
           opacity: 0,
-          emissive: 0x4488bb,
-          emissiveIntensity: 0.4,
-          reflectivity: 0.3,
+          emissive: 0x2a5a7a,
+          emissiveIntensity: 0.5,
+          reflectivity: 0.4,
         })
       ),
       position: new THREE.Vector3(0, -100, 0),
@@ -87,7 +85,7 @@ export const createClouds = (THREE, scene, count = 15) => {
 
       const angle = (j / 15) * Math.PI * 2;
       const radius = 2.5 + Math.random() * 2;
-      const height = Math.sin(angle * 2) * 1.5; // Vary height for natural shape
+      const height = Math.sin(angle * 2) * 1.5;
       cloudParticle.position.x =
         Math.cos(angle) * radius + (Math.random() - 0.5) * 2;
       cloudParticle.position.y = height + (Math.random() - 0.5);
@@ -98,7 +96,6 @@ export const createClouds = (THREE, scene, count = 15) => {
       cloudParticles.push(cloudParticle);
     }
 
-    // Add wispy cloud edges
     for (let k = 0; k < 8; k++) {
       const wispyParticle = new THREE.Mesh(
         new THREE.SphereGeometry(0.8 + Math.random() * 0.7, 12, 12),
@@ -117,7 +114,6 @@ export const createClouds = (THREE, scene, count = 15) => {
       cloudParticles.push(wispyParticle);
     }
 
-    // Start clouds above ocean (right side, x: 40-70) at higher altitude
     const startX = 40 + Math.random() * 30;
     cloudGroup.position.set(
       startX,
@@ -132,25 +128,25 @@ export const createClouds = (THREE, scene, count = 15) => {
       particles: cloudParticles,
       waterContent: 0,
       maxWaterContent: 2.0,
-      speed: -0.08 - Math.random() * 0.04, // Negative = move left toward mountains
+      speed: -0.08 - Math.random() * 0.04,
       driftPhase: Math.random() * Math.PI * 2,
-      stage: "forming", // forming -> traveling -> raining
+      stage: "forming",
     });
   }
   return clouds;
 };
 
-export const createPrecipitationParticles = (THREE, scene, count = 60) => {
+export const createPrecipitationParticles = (THREE, scene, count = 120) => {
   const precipitationParticles = [];
   for (let i = 0; i < count; i++) {
     const particle = {
       mesh: new THREE.Mesh(
-        new THREE.SphereGeometry(0.22, 8, 8),
+        new THREE.SphereGeometry(0.28, 8, 8),
         new THREE.MeshLambertMaterial({
-          color: 0x2e5cb8,
+          color: 0x1a4670,
           transparent: true,
           opacity: 0,
-          emissive: 0x001144,
+          emissive: 0x0a2040,
         })
       ),
       position: new THREE.Vector3(0, -100, 0),
@@ -256,8 +252,9 @@ export const processEvaporation = (
         vapor.velocity.z = (Math.random() - 0.5) * 0.04;
 
         vapor.mesh.position.copy(vapor.position);
-        vapor.mesh.material.opacity = 0.5;
-        vapor.mesh.material.color.setHex(0x87ceeb);
+        vapor.mesh.material.opacity = 0.7;
+        vapor.mesh.material.color.setHex(0x3a7ca5);
+        vapor.mesh.scale.setScalar(2.0);
         vapor.age = 0;
 
         p.stage = "evaporated";
