@@ -723,21 +723,21 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
                 point.x + perpX * offset * 0.5,
                 point.y +
                   6 + // Above river surface
-                  Math.sin(Date.now() * 0.008 + p.riverProgress * 8 + offset) *
-                    0.5,
+                  Math.sin(p.riverProgress * 10 + offset) * 0.3, // Gentle wave, no time-based animation
                 point.z + perpZ * offset * 0.5
               );
             }
 
             p.mesh.position.copy(p.position);
 
-            // Shimmer effect for flowing water
+            // Shimmer effect - move WITH the flow direction (subtract time to match flow)
+            const flowTime = Date.now() * 0.003; // Slower shimmer
             const shimmer =
-              0.75 + Math.sin(Date.now() * 0.008 + p.riverProgress * 15) * 0.15;
+              0.75 + Math.sin(p.riverProgress * 20 - flowTime) * 0.15;
             p.mesh.material.opacity = shimmer;
 
-            // Dark blue color variation for sparkle
-            const sparkle = Math.sin(Date.now() * 0.012 + p.riverProgress * 12);
+            // Dark blue color variation - sparkle moves with flow
+            const sparkle = Math.sin(p.riverProgress * 15 - flowTime * 0.8);
             if (sparkle > 0.5) {
               p.mesh.material.color.setHex(0x1976d2); // Medium dark blue sparkle
               p.mesh.material.emissive.setHex(0x1565c0);
