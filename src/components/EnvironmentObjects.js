@@ -1,6 +1,7 @@
 export const createEducationalLandscape = (THREE, scene) => {
   const landscape = {};
 
+  // Terrain
   const terrainGeometry = new THREE.PlaneGeometry(200, 120, 80, 50);
   const terrainVertices = terrainGeometry.attributes.position;
 
@@ -28,7 +29,6 @@ export const createEducationalLandscape = (THREE, scene) => {
     }
 
     height += (Math.random() - 0.5) * 1.5;
-
     terrainVertices.setY(i, Math.max(height, 0));
   }
   terrainVertices.needsUpdate = true;
@@ -87,31 +87,30 @@ export const createEducationalLandscape = (THREE, scene) => {
 
   const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
   terrain.rotation.x = -Math.PI / 2;
-  terrain.rotation.y = 0;
   terrain.position.y = 0;
   terrain.receiveShadow = true;
   terrain.castShadow = true;
   scene.add(terrain);
 
+  // Hills
   const hillsGroup = new THREE.Group();
-
   const hillPositions = [
-    { x: -48, z: -40, radius: 16, height: 14 },
-    { x: -48, z: -20, radius: 18, height: 15 },
-    { x: -48, z: 20, radius: 16, height: 14 },
-    { x: -48, z: 40, radius: 18, height: 15 },
-    { x: -45, z: -35, radius: 20, height: 16 },
-    { x: -45, z: -18, radius: 18, height: 15 },
-    { x: -45, z: 18, radius: 20, height: 16 },
-    { x: -45, z: 50, radius: 16, height: 14 },
+    { x: -48, z: -40, radius: 16, height: 20 },
+    { x: -48, z: -20, radius: 18, height: 20 },
+    { x: -48, z: 20, radius: 16, height: 20 },
+    { x: -48, z: 40, radius: 18, height: 20 },
+    { x: -45, z: -35, radius: 20, height: 18 },
+    { x: -45, z: -18, radius: 18, height: 18 },
+    { x: -45, z: 18, radius: 20, height: 18 },
+    { x: -45, z: 50, radius: 16, height: 18 },
     { x: -42, z: -45, radius: 18, height: 15 },
-    { x: -42, z: -25, radius: 16, height: 14 },
-    { x: -42, z: 25, radius: 20, height: 16 },
+    { x: -42, z: -25, radius: 16, height: 15 },
+    { x: -42, z: 25, radius: 20, height: 15 },
     { x: -42, z: 40, radius: 18, height: 15 },
-    { x: -38, z: -35, radius: 20, height: 16 },
-    { x: -38, z: -18, radius: 18, height: 15 },
+    { x: -38, z: -35, radius: 20, height: 14 },
+    { x: -38, z: -18, radius: 18, height: 14 },
     { x: -38, z: 20, radius: 16, height: 14 },
-    { x: -38, z: 45, radius: 20, height: 16 },
+    { x: -38, z: 45, radius: 20, height: 14 },
     { x: -35, z: -50, radius: 16, height: 14 },
     { x: -35, z: -25, radius: 18, height: 15 },
     { x: -35, z: 22, radius: 20, height: 16 },
@@ -165,22 +164,29 @@ export const createEducationalLandscape = (THREE, scene) => {
     { x: 30, z: 50, radius: 14, height: 5 },
     { x: 33, z: -40, radius: 12, height: 4 },
     { x: 33, z: -20, radius: 12, height: 4 },
-    { x: 33, z: 20, radius: 14, height: 5 },
+    { x: 33, z: 20, radius: 14, height: 3 },
     { x: 33, z: 40, radius: 12, height: 4 },
     { x: 33, z: 55, radius: 12, height: 4 },
-    { x: 36, z: -50, radius: 10, height: 3 },
-    { x: 36, z: -30, radius: 10, height: 3 },
-    { x: 36, z: -18, radius: 12, height: 4 },
-    { x: 36, z: 25, radius: 10, height: 3 },
-    { x: 36, z: 45, radius: 10, height: 3 },
-    // Fill empty area near beach (center area)
-    { x: 38, z: -12, radius: 10, height: 3 },
-    { x: 38, z: 0, radius: 12, height: 4 },
-    { x: 38, z: 12, radius: 10, height: 3 },
-    { x: 40, z: -8, radius: 8, height: 2 },
-    { x: 40, z: 5, radius: 10, height: 3 },
-    { x: 42, z: -5, radius: 8, height: 2 },
-    { x: 42, z: 8, radius: 8, height: 2 },
+    { x: 36, z: -50, radius: 10, height: 2 },
+    { x: 36, z: -30, radius: 10, height: 2 },
+    { x: 36, z: -18, radius: 12, height: 2 },
+    { x: 36, z: 25, radius: 10, height: 2 },
+    { x: 36, z: 45, radius: 10, height: 2 },
+    { x: 38, z: -12, radius: 10, height: 1 },
+    { x: 38, z: 0, radius: 12, height: 1 },
+    { x: 38, z: 12, radius: 10, height: 1 },
+    { x: 40, z: -8, radius: 8, height: 1 },
+    { x: 40, z: 5, radius: 10, height: 1 },
+    { x: 42, z: -5, radius: 5, height: 1 },
+    { x: 42, z: 8, radius: 15, height: 1 },
+    { x: -50, z: 0, radius: 18, height: 19 },
+    { x: -47, z: -50, radius: 17, height: 17 },
+    { x: -47, z: 50, radius: 17, height: 17 },
+    { x: -43, z: -10, radius: 19, height: 16 },
+    { x: -43, z: 10, radius: 19, height: 16 },
+    { x: -40, z: 0, radius: 20, height: 15 },
+    { x: -40, z: -50, radius: 18, height: 14 },
+    { x: -40, z: 50, radius: 18, height: 14 },
   ];
 
   hillPositions.forEach(({ x, z, radius, height }) => {
@@ -206,7 +212,6 @@ export const createEducationalLandscape = (THREE, scene) => {
   });
 
   scene.add(hillsGroup);
-
   const soilGeometry = new THREE.BoxGeometry(140, 8, 120);
   const soilMaterial = new THREE.MeshLambertMaterial({
     color: 0x8b4513,
@@ -254,6 +259,7 @@ export const createEducationalLandscape = (THREE, scene) => {
   mountainGround.receiveShadow = true;
   scene.add(mountainGround);
 
+  // Ocean
   const oceanGeometry = new THREE.BoxGeometry(65, 15, 120);
   const oceanMaterial = new THREE.MeshLambertMaterial({
     color: 0x1e6091,
@@ -267,26 +273,27 @@ export const createEducationalLandscape = (THREE, scene) => {
   ocean.receiveShadow = true;
   scene.add(ocean);
 
-  // Create river using curved tube geometry for natural look
+  // River
   const riverPoints = [
-    new THREE.Vector3(-50, 18, 12),
-    new THREE.Vector3(-40, 16, 8),
-    new THREE.Vector3(-30, 14, 4),
-    new THREE.Vector3(-20, 12, 0),
-    new THREE.Vector3(-5, 10, -4),
-    new THREE.Vector3(10, 8, -8),
-    new THREE.Vector3(25, 5, -10),
-    new THREE.Vector3(40, 2, -10),
+    new THREE.Vector3(-60, 8, 12),
+    new THREE.Vector3(-50, 12, 10),
+    new THREE.Vector3(-40, 12, 8),
+    new THREE.Vector3(-30, 12, 4),
+    new THREE.Vector3(-20, 10, 0),
+    new THREE.Vector3(-5, 8, -5),
+    new THREE.Vector3(10, 6, 0),
+    new THREE.Vector3(20, 5, -10),
+    new THREE.Vector3(30, 5, -20),
+    new THREE.Vector3(40, 1, -30),
   ];
 
   const riverCurve = new THREE.CatmullRomCurve3(riverPoints);
 
-  // SMOOTH river water - same color as ocean for unified look
   const riverTubeGeometry = new THREE.TubeGeometry(
     riverCurve,
-    100, // More segments for smoothness
-    5, // Slightly wider
-    24, // More radial segments for smooth look
+    100,
+    5,
+    24,
     false,
   );
   const riverMaterial = new THREE.MeshLambertMaterial({
@@ -302,11 +309,10 @@ export const createEducationalLandscape = (THREE, scene) => {
   river.receiveShadow = true;
   scene.add(river);
 
-  // Smooth river surface layer on top for shimmer - matching ocean
   const riverSurfaceGeometry = new THREE.TubeGeometry(
     riverCurve,
     100,
-    5.5, // Slightly larger to sit on top
+    5.5,
     24,
     false,
   );
@@ -325,7 +331,6 @@ export const createEducationalLandscape = (THREE, scene) => {
   riverSurfaceMesh.position.y = 0.5;
   scene.add(riverSurfaceMesh);
 
-  // River mouth where it meets ocean - smooth transition matching ocean
   const riverMouthGeometry = new THREE.CircleGeometry(10, 32);
   const riverMouthMaterial = new THREE.MeshLambertMaterial({
     color: 0x1e6091,
@@ -340,41 +345,11 @@ export const createEducationalLandscape = (THREE, scene) => {
   riverMouth.position.set(42, 2.5, -10);
   scene.add(riverMouth);
 
-  // Store river reference for animation
   landscape.river = river;
   landscape.riverSurface = riverSurfaceMesh;
   landscape.riverCurve = riverCurve;
 
-  const waveGeometry = new THREE.PlaneGeometry(90, 120, 30, 30);
-  const waveMaterial = new THREE.MeshLambertMaterial({
-    color: 0x5599cc,
-    transparent: true,
-    opacity: 0.6,
-    wireframe: false,
-    side: THREE.DoubleSide,
-  });
-  const waves = new THREE.Mesh(waveGeometry, waveMaterial);
-  waves.rotation.x = -Math.PI / 2;
-  waves.position.set(55, 5, 0);
-  waves.receiveShadow = true;
-
-  const vertices = waveGeometry.attributes.position;
-  const originalPositions = [];
-  for (let i = 0; i < vertices.count; i++) {
-    const x = vertices.getX(i);
-    const z = vertices.getZ(i);
-    originalPositions.push({ x, z });
-    const waveHeight =
-      Math.sin(x * 0.15) * Math.cos(z * 0.15) * 0.6 + Math.sin(x * 0.3) * 0.3;
-    vertices.setY(i, waveHeight);
-  }
-  vertices.needsUpdate = true;
-
-  waves.userData.originalPositions = originalPositions;
-  waves.userData.time = 0;
-
-  scene.add(waves);
-
+  // Mountains
   const mountains = [];
   const mountainData = [
     { x: -55, z: -25, height: 35, color: 0x8b7355 },
@@ -391,24 +366,18 @@ export const createEducationalLandscape = (THREE, scene) => {
   });
 
   function createRealisticMountain(x, z, height, color) {
-    // Create more realistic mountain using multiple layered cones
     const baseRadius = 20 + Math.random() * 5;
-
-    // Main mountain body with irregular shape
     const mountainGeometry = new THREE.ConeGeometry(baseRadius, height, 24, 8);
     const positions = mountainGeometry.attributes.position;
 
-    // Add realistic displacement for rugged mountain surface
     for (let i = 0; i < positions.count; i++) {
       const px = positions.getX(i);
       const py = positions.getY(i);
       const pz = positions.getZ(i);
 
-      // Height-based displacement (more rough at base, smoother at peak)
       const heightFactor = (py + height / 2) / height;
       const roughness = (1 - heightFactor) * 4 + 0.5;
 
-      // Add noise-like displacement
       const noiseX = Math.sin(py * 0.3 + px * 0.5) * roughness;
       const noiseZ = Math.cos(py * 0.3 + pz * 0.5) * roughness;
       const randomDisp = (Math.random() - 0.5) * roughness * 1.5;
@@ -416,7 +385,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       positions.setX(i, px + noiseX + randomDisp);
       positions.setZ(i, pz + noiseZ + randomDisp);
 
-      // Add some vertical variation too
       if (heightFactor < 0.9) {
         positions.setY(i, py + (Math.random() - 0.5) * roughness * 0.5);
       }
@@ -424,7 +392,6 @@ export const createEducationalLandscape = (THREE, scene) => {
     positions.needsUpdate = true;
     mountainGeometry.computeVertexNormals();
 
-    // Add vertex colors for realistic shading
     const colors = [];
     for (let i = 0; i < positions.count; i++) {
       const py = positions.getY(i);
@@ -432,23 +399,19 @@ export const createEducationalLandscape = (THREE, scene) => {
 
       let r, g, b;
       if (heightFactor > 0.75) {
-        // Snow at peak
         r = 0.95 + Math.random() * 0.05;
         g = 0.95 + Math.random() * 0.05;
         b = 0.98 + Math.random() * 0.02;
       } else if (heightFactor > 0.55) {
-        // Rocky grey area
         const grey = 0.45 + Math.random() * 0.15;
         r = grey;
         g = grey * 0.95;
         b = grey * 0.9;
       } else if (heightFactor > 0.3) {
-        // Brown rocky area
         r = 0.45 + Math.random() * 0.1;
         g = 0.35 + Math.random() * 0.1;
         b = 0.25 + Math.random() * 0.08;
       } else {
-        // Dark base with some green
         r = 0.35 + Math.random() * 0.1;
         g = 0.38 + Math.random() * 0.1;
         b = 0.28 + Math.random() * 0.08;
@@ -471,7 +434,7 @@ export const createEducationalLandscape = (THREE, scene) => {
     scene.add(mountain);
     mountains.push(mountain);
 
-    // Add secondary peaks for more realistic silhouette
+    // Secondary peaks
     const numSecondaryPeaks = 2 + Math.floor(Math.random() * 2);
     for (let p = 0; p < numSecondaryPeaks; p++) {
       const peakAngle =
@@ -488,7 +451,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       );
       const peakPositions = peakGeometry.attributes.position;
 
-      // Add roughness to secondary peaks
       for (let i = 0; i < peakPositions.count; i++) {
         const ppx = peakPositions.getX(i);
         const ppy = peakPositions.getY(i);
@@ -500,7 +462,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       peakPositions.needsUpdate = true;
       peakGeometry.computeVertexNormals();
 
-      // Vertex colors for secondary peaks
       const peakColors = [];
       for (let i = 0; i < peakPositions.count; i++) {
         const ppy = peakPositions.getY(i);
@@ -537,7 +498,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       peak.receiveShadow = true;
       scene.add(peak);
     }
-
     // Add rocky outcrops and cliff faces
     const numCliffs = 3 + Math.floor(Math.random() * 3);
     for (let c = 0; c < numCliffs; c++) {
@@ -577,8 +537,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       cliff.receiveShadow = true;
       scene.add(cliff);
     }
-
-    // Scattered rocks on mountain surface
+    // Rocks, gems, crystals...
     const rockColors = [
       0x5a5a5a, 0x6b6b6b, 0x4a4a4a, 0x7a7a7a, 0x5c544a, 0x4d4639,
     ];
@@ -619,14 +578,12 @@ export const createEducationalLandscape = (THREE, scene) => {
       scene.add(rock);
     }
 
-    // Gem crystals - whites and greys only (no blues)
+    // Gem crystals
     const gemColors = [
-      // Whites/Clears
       { color: 0xf0f4f8, emissive: 0xd0e0f0, name: "white" },
       { color: 0xe8eef4, emissive: 0xc0d0e0, name: "ice" },
       { color: 0xffffff, emissive: 0xe0e0ff, name: "diamond" },
       { color: 0xc8d4dc, emissive: 0xa8b4bc, name: "platinum" },
-      // Greys/Silver
       { color: 0x8899aa, emissive: 0x667788, name: "grey" },
       { color: 0xa0a8b0, emissive: 0x889098, name: "silver" },
     ];
@@ -650,13 +607,12 @@ export const createEducationalLandscape = (THREE, scene) => {
         const gemMaterial = new THREE.MeshLambertMaterial({
           color: gemType.color,
           emissive: gemType.emissive,
-          emissiveIntensity: 0.5, // Brighter glow
+          emissiveIntensity: 0.5,
           transparent: true,
           opacity: 0.92,
         });
         const gem = new THREE.Mesh(gemGeometry, gemMaterial);
 
-        // Position gems in a small cluster
         const offsetX = (Math.random() - 0.5) * 3;
         const offsetZ = (Math.random() - 0.5) * 3;
         gem.position.set(
@@ -669,13 +625,13 @@ export const createEducationalLandscape = (THREE, scene) => {
           Math.random() * Math.PI,
           Math.random() * Math.PI * 0.3,
         );
-        gem.scale.y = 2.0 + Math.random() * 2.0; // Taller crystals
+        gem.scale.y = 2.0 + Math.random() * 2.0;
         gem.castShadow = true;
         scene.add(gem);
       }
     }
 
-    // Add crystal formations (reduced - 3-5 formations)
+    // Crystal formations
     const numCrystals = 3 + Math.floor(Math.random() * 3);
     for (let i = 0; i < numCrystals; i++) {
       const angle = (i / numCrystals) * Math.PI * 2 + Math.random() * 0.3;
@@ -686,7 +642,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       const crystalY = heightRatio * height;
       const crystalZ = z + Math.sin(angle) * radius;
 
-      // LARGE main crystal
       const crystalSize = 2.0 + Math.random() * 2.0;
       const crystalGeometry = new THREE.ConeGeometry(
         crystalSize * 0.6,
@@ -708,7 +663,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       crystal.castShadow = true;
       scene.add(crystal);
 
-      // Surrounding crystals (3-4 around each)
       const numSurrounding = 3 + Math.floor(Math.random() * 2);
       for (let j = 0; j < numSurrounding; j++) {
         const smallSize = 0.8 + Math.random() * 1.0;
@@ -732,7 +686,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       }
     }
 
-    // Add crystal spires (1-2 per mountain)
+    // Crystal spires
     const numSpires = 1 + Math.floor(Math.random() * 2);
     for (let i = 0; i < numSpires; i++) {
       const spireAngle = (i / numSpires) * Math.PI * 2 + Math.random() * 0.5;
@@ -741,7 +695,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       const spireZ = z + Math.sin(spireAngle) * spireRadius;
       const spireY = height * 0.3;
 
-      const spireHeight = 6 + Math.random() * 5; // TALLER spires
+      const spireHeight = 6 + Math.random() * 5;
       const spireGeometry = new THREE.ConeGeometry(1.8, spireHeight, 6);
       const spireType = gemColors[Math.floor(Math.random() * gemColors.length)];
       const spireMaterial = new THREE.MeshLambertMaterial({
@@ -758,7 +712,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       spire.castShadow = true;
       scene.add(spire);
 
-      // Add crystals around the spire (3)
       for (let k = 0; k < 3; k++) {
         const miniAngle = (k / 3) * Math.PI * 2;
         const miniSize = 1.2 + Math.random() * 0.8;
@@ -776,7 +729,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       }
     }
 
-    // Add centerpiece crystal on some mountains (less frequent)
     if (Math.random() > 0.6) {
       const massiveType =
         gemColors[Math.floor(Math.random() * gemColors.length)];
@@ -796,7 +748,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       massiveCrystal.castShadow = true;
       scene.add(massiveCrystal);
 
-      // Ring of crystals around massive one (reduced)
       for (let r = 0; r < 4; r++) {
         const ringAngle = (r / 4) * Math.PI * 2;
         const ringSize = 1.5 + Math.random() * 1;
@@ -814,7 +765,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       }
     }
 
-    // Add gem veins running along mountain surface (1-2 veins)
     const numVeins = 1 + Math.floor(Math.random() * 2);
     for (let v = 0; v < numVeins; v++) {
       const veinAngle = (v / numVeins) * Math.PI * 2 + Math.random() * 0.5;
@@ -828,7 +778,7 @@ export const createEducationalLandscape = (THREE, scene) => {
         const gemY = veinHeightRatio * height;
         const gemZ = z + Math.sin(veinAngle + g * 0.1) * veinRadius;
 
-        const veinGemSize = 0.8 + Math.random() * 0.8; // BIGGER vein gems
+        const veinGemSize = 0.8 + Math.random() * 0.8;
         const veinGemGeometry = new THREE.OctahedronGeometry(veinGemSize, 0);
         const veinGemMaterial = new THREE.MeshLambertMaterial({
           color: veinType.color,
@@ -854,7 +804,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       }
     }
 
-    // Keep some grey minerals for texture variety (reduced)
     const mineralColors = [0x5a5a5a, 0x6a6a6a, 0x4a4a4a, 0x7a7a7a, 0x888888];
 
     const numMinerals = 3 + Math.floor(Math.random() * 3);
@@ -867,7 +816,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       const mineralY = heightRatio * height + 2;
       const mineralZ = z + Math.sin(angle) * radius;
 
-      const mineralSize = 1.0 + Math.random() * 1.2; // BIGGER minerals
+      const mineralSize = 1.0 + Math.random() * 1.2;
       const mineralGeometry = new THREE.OctahedronGeometry(mineralSize, 0);
       const mineralColor =
         mineralColors[Math.floor(Math.random() * mineralColors.length)];
@@ -956,9 +905,8 @@ export const createEducationalLandscape = (THREE, scene) => {
     }
   }
 
-  const trees = [];
+  // Trees
   const treeLocations = [
-    // Near mountains - scattered trees
     [-44, -35],
     [-44, 40],
     [-40, -50],
@@ -967,8 +915,6 @@ export const createEducationalLandscape = (THREE, scene) => {
     [-38, -20],
     [-46, 25],
     [-46, -10],
-
-    // Hill area - trees on both sides
     [-28, 45],
     [-28, -45],
     [-22, 35],
@@ -992,8 +938,6 @@ export const createEducationalLandscape = (THREE, scene) => {
     [-15, 45],
     [8, -50],
     [22, -38],
-
-    // Near river banks
     [-35, 22],
     [-30, 20],
     [-20, 18],
@@ -1009,8 +953,53 @@ export const createEducationalLandscape = (THREE, scene) => {
     [-40, 18],
     [20, -28],
   ];
+  // Function to find hill height at tree location
+  function getHillHeightAtLocation(treeX, treeZ) {
+    let closestHill = null;
+    let closestDistance = Infinity;
+
+    hillPositions.forEach((hill) => {
+      const distance = Math.sqrt(
+        Math.pow(treeX - hill.x, 2) + Math.pow(treeZ - hill.z, 2),
+      );
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestHill = hill;
+      }
+    });
+
+    if (closestHill && closestDistance < 20) {
+      // Hill mesh is positioned at y=0 and scaled by height/radius
+      // The top of the hill is at: (height / radius) * radius = height
+      const hillTopHeight = closestHill.height;
+      return hillTopHeight; // No offset - trees sit directly on hill surface
+    }
+
+    // Fallback: calculate terrain height using same algorithm as terrain
+    const normalizedX = (100 - treeX) / 200;
+    let height = Math.pow(normalizedX, 2.2) * 40;
+
+    if (treeX < -30) {
+      const mountainNoise =
+        Math.sin(treeX * 0.15) * Math.cos(treeZ * 0.12) * 15;
+      const ridges = Math.abs(Math.sin(treeX * 0.08)) * 8;
+      height += mountainNoise + ridges;
+    } else if (treeX < 20) {
+      height += Math.sin(treeX * 0.1) * Math.cos(treeZ * 0.1) * 20;
+      height += Math.sin(treeX * 0.05 + treeZ * 0.05) * 12;
+      if (treeX > -25 && treeX < 15) {
+        height += 15;
+      }
+    } else {
+      height += Math.sin(treeX * 0.06) * Math.cos(treeZ * 0.06) * 2;
+    }
+
+    return Math.max(height, 0);
+  }
 
   treeLocations.forEach(([x, z]) => {
+    const treeHeight = getHillHeightAtLocation(x, z);
+
     if (window.THREE && window.THREE.OBJLoader) {
       const loader = new THREE.OBJLoader();
 
@@ -1035,7 +1024,7 @@ export const createEducationalLandscape = (THREE, scene) => {
                 });
 
                 const treeScale = 0.4 + Math.random() * 0.2;
-                object.position.set(x, 12, z);
+                object.position.set(x, treeHeight, z);
                 object.scale.set(treeScale, treeScale, treeScale);
                 object.rotation.y = Math.random() * Math.PI * 2;
 
@@ -1047,7 +1036,7 @@ export const createEducationalLandscape = (THREE, scene) => {
                   "Failed to load 3D tree model, using fallback:",
                   error,
                 );
-                createSimpleTree(x, z);
+                createSimpleTree(x, z, treeHeight);
               },
             );
           },
@@ -1057,20 +1046,18 @@ export const createEducationalLandscape = (THREE, scene) => {
               "Failed to load MTL, loading OBJ without materials:",
               error,
             );
-            loadTreeWithoutMaterial(x, z);
+            loadTreeWithoutMaterial(x, z, treeHeight);
           },
         );
       } else {
-        loadTreeWithoutMaterial(x, z);
+        loadTreeWithoutMaterial(x, z, treeHeight);
       }
     } else {
-      createSimpleTree(x, z);
+      createSimpleTree(x, z, treeHeight);
     }
-
-    trees.push([x, z]);
   });
 
-  function loadTreeWithoutMaterial(x, z) {
+  function loadTreeWithoutMaterial(x, z, treeHeight) {
     const loader = new THREE.OBJLoader();
     loader.load(
       "/Lowpoly_tree_sample.obj",
@@ -1092,7 +1079,7 @@ export const createEducationalLandscape = (THREE, scene) => {
         });
 
         const treeScale = 0.4 + Math.random() * 0.2;
-        object.position.set(x, 12, z);
+        object.position.set(x, treeHeight, z);
         object.scale.set(treeScale, treeScale, treeScale);
         object.rotation.y = Math.random() * Math.PI * 2;
 
@@ -1101,19 +1088,19 @@ export const createEducationalLandscape = (THREE, scene) => {
       undefined,
       (error) => {
         console.warn("Failed to load 3D tree model, using fallback:", error);
-        createSimpleTree(x, z);
+        createSimpleTree(x, z, treeHeight);
       },
     );
   }
 
-  function createSimpleTree(x, z) {
-    const treeHeight = 4 + Math.random() * 2;
-    const yOffset = 12;
+  function createSimpleTree(x, z, treeHeight) {
+    const treeHeightScale = 4 + Math.random() * 2;
+    const yOffset = treeHeight;
 
     const trunkGeometry = new THREE.CylinderGeometry(
       0.3,
       0.45,
-      treeHeight * 0.6,
+      treeHeightScale * 0.6,
       12,
     );
     const trunkMaterial = new THREE.MeshLambertMaterial({
@@ -1123,7 +1110,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       emissiveIntensity: 0.05,
     });
     const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-    trunk.position.set(x, yOffset + treeHeight * 0.3, z);
+    trunk.position.set(x, yOffset + treeHeightScale * 0.3, z);
     trunk.castShadow = true;
     trunk.receiveShadow = true;
     scene.add(trunk);
@@ -1132,7 +1119,7 @@ export const createEducationalLandscape = (THREE, scene) => {
     for (let i = 0; i < 3; i++) {
       const canopyGeometry = new THREE.ConeGeometry(
         2 - i * 0.45,
-        treeHeight * 0.5,
+        treeHeightScale * 0.5,
         14,
       );
       const canopyMaterial = new THREE.MeshLambertMaterial({
@@ -1144,20 +1131,21 @@ export const createEducationalLandscape = (THREE, scene) => {
       const canopy = new THREE.Mesh(canopyGeometry, canopyMaterial);
       canopy.position.set(
         x + (Math.random() - 0.5) * 0.5,
-        yOffset + treeHeight * 0.65 + i * 0.75,
+        yOffset + treeHeightScale * 0.65 + i * 0.75,
         z + (Math.random() - 0.5) * 0.5,
       );
       canopy.castShadow = true;
       canopy.receiveShadow = true;
       scene.add(canopy);
     }
+
     for (let j = 0; j < 4; j++) {
       const branchGeometry = new THREE.CylinderGeometry(0.08, 0.1, 0.75, 6);
       const branch = new THREE.Mesh(branchGeometry, trunkMaterial);
       const angle = (j / 4) * Math.PI * 2;
       branch.position.set(
         x + Math.cos(angle) * 0.35,
-        yOffset + treeHeight * 0.4 + j * 0.25,
+        yOffset + treeHeightScale * 0.4 + j * 0.25,
         z + Math.sin(angle) * 0.35,
       );
       branch.rotation.z = Math.PI / 4;
@@ -1165,37 +1153,6 @@ export const createEducationalLandscape = (THREE, scene) => {
       branch.castShadow = true;
       scene.add(branch);
     }
-  }
-
-  const waterTableGeometry = new THREE.BoxGeometry(200, 1.5, 120);
-  const waterTableMaterial = new THREE.MeshLambertMaterial({
-    color: 0x4169e1,
-    transparent: true,
-    opacity: 0.8,
-    emissive: 0x001155,
-    emissiveIntensity: 0.4,
-  });
-  const waterTable = new THREE.Mesh(waterTableGeometry, waterTableMaterial);
-  waterTable.position.y = -12;
-  scene.add(waterTable);
-
-  for (let i = 0; i < 15; i++) {
-    const flowIndicator = new THREE.Mesh(
-      new THREE.SphereGeometry(0.3, 8, 6),
-      new THREE.MeshLambertMaterial({
-        color: 0x6495ed,
-        transparent: true,
-        opacity: 0.6,
-        emissive: 0x001144,
-        emissiveIntensity: 0.5,
-      }),
-    );
-    flowIndicator.position.set(
-      (Math.random() - 0.5) * 180,
-      -12 + (Math.random() - 0.5) * 3,
-      (Math.random() - 0.5) * 100,
-    );
-    scene.add(flowIndicator);
   }
 
   landscape.trees = treeLocations;
@@ -1215,7 +1172,7 @@ export const createSun = (THREE, scene) => {
       emissiveIntensity: 1.0,
     }),
   );
-  sun.position.set(70, 80, -40);
+  sun.position.set(65, 75, -30);
   scene.add(sun);
 
   const coronaGeometry = new THREE.SphereGeometry(12, 32, 32);
@@ -1227,7 +1184,7 @@ export const createSun = (THREE, scene) => {
     emissiveIntensity: 0.6,
   });
   const corona = new THREE.Mesh(coronaGeometry, coronaMaterial);
-  corona.position.set(70, 80, -40);
+  corona.position.set(65, 75, -30);
   scene.add(corona);
 
   const outerGlow = new THREE.Mesh(
@@ -1240,7 +1197,7 @@ export const createSun = (THREE, scene) => {
       emissiveIntensity: 0.3,
     }),
   );
-  outerGlow.position.set(70, 80, -40);
+  outerGlow.position.set(65, 75, -30);
   scene.add(outerGlow);
 
   for (let i = 0; i < 16; i++) {
@@ -1258,8 +1215,8 @@ export const createSun = (THREE, scene) => {
 
     const x = Math.cos(angle) * 15;
     const z = Math.sin(angle) * 15;
-    ray.position.set(70 + x, 80, -40 + z);
-    ray.lookAt(new THREE.Vector3(70 + x * 2, 80, -40 + z * 2));
+    ray.position.set(65 + x, 75, -30 + z);
+    ray.lookAt(new THREE.Vector3(65 + x * 2, 75, -30 + z * 2));
     scene.add(ray);
   }
 
@@ -1276,9 +1233,9 @@ export const createSun = (THREE, scene) => {
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.random() * Math.PI;
     particle.position.set(
-      70 + radius * Math.sin(phi) * Math.cos(theta),
-      80 + radius * Math.cos(phi),
-      40 + radius * Math.sin(phi) * Math.sin(theta),
+      65 + radius * Math.sin(phi) * Math.cos(theta),
+      75 + radius * Math.cos(phi),
+      0 + radius * Math.sin(phi) * Math.sin(theta),
     );
     scene.add(particle);
   }
@@ -1291,7 +1248,7 @@ export const createLighting = (THREE, scene) => {
   scene.add(ambientLight);
 
   const directionalLight = new THREE.DirectionalLight(0xfff4e6, 1.0);
-  directionalLight.position.set(60, 80, -40);
+  directionalLight.position.set(60, 80, -30);
   directionalLight.castShadow = true;
   directionalLight.shadow.mapSize.width = 2048;
   directionalLight.shadow.mapSize.height = 2048;
