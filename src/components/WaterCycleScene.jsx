@@ -244,6 +244,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
     const landscape = createEducationalLandscape(THREE, scene);
     const treeLocations = landscape.trees;
     riverRef.current = landscape.river;
+    const riverCurve = landscape.riverCurve;
     createSun(THREE, scene);
 
     // Create particle systems
@@ -261,6 +262,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
       precipitationParticles,
       groundwaterParticles,
       treeLocations,
+      riverCurve,
     };
 
     // Start animation loop
@@ -296,6 +298,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
         precipitationParticles,
         groundwaterParticles,
         treeLocations,
+        riverCurve,
       } = particleSystemsRef.current;
 
       const evapRate = 0.4;
@@ -311,7 +314,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
         clouds.forEach((cloud) => {
           cloud.mesh.visible = true;
         });
-        updateWaterParticles(waterParticles);
+        updateWaterParticles(waterParticles, riverCurve);
         processEvaporation(waterParticles, vaporParticles, evapRate);
         processTranspiration(treeLocations, vaporParticles, transpRate);
         updateVaporMovement(vaporParticles, clouds, condensRate);
@@ -622,7 +625,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
           }
         });
       } else if (currentStep === "collection") {
-        // COLLECTION: Water flows through rivers to ocean - EXTREMELY VISIBLE
+        // COLLECTION: Continuous water flowing through river to ocean
 
         // Hide clouds during collection to focus on river
         clouds.forEach((cloud) => {
@@ -645,81 +648,65 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
           }
         });
 
-        // Create MANY MORE water particles on mountains that flow to ocean (river)
-        // Spawn MANY particles per frame for VERY dense river
-        const spawnCount = Math.random() < 0.7 ? 5 : 4;
+        // CONTINUOUS river flow - spawn water at mountain start
+        const spawnCount = 3;
         for (let i = 0; i < spawnCount; i++) {
           const water = waterParticles.find(
             (w) =>
               w.stage === "evaporated" ||
-              (w.stage === "collection" && w.position.x > 55) ||
+              w.stage === "collection" ||
               w.position.y < -50
           );
           if (water) {
-            water.stage = "runoff";
-            // Start from mountain area (left side) - concentrated river source
-            water.position.set(
-              -60 + Math.random() * 10, // Mountains area (x: -60 to -50)
-              8 + Math.random() * 6, // Elevated on mountain
-              -3 + Math.random() * 6 // Very narrow river path
-            );
-            water.mesh.position.copy(water.position);
-            water.mesh.material.opacity = 1.0;
-            water.mesh.material.color.setHex(0x2196f3); // Very bright blue
-            // Make river particles MUCH larger and visible
-            water.mesh.scale.setScalar(2.5 + Math.random() * 1.0);
+            water.stage = "river";
+            water.riverProgress = 0; // Start at beginning of river
+            water.mesh.material.opacity = 0.95;
+            water.mesh.material.color.setHex(0x1e6091); // Match ocean color
+            water.mesh.scale.setScalar(1.8 + Math.random() * 0.5);
           }
         }
 
-        // Water flows from mountains to ocean (VERY CLEAR river effect)
+        // Update all water particles for continuous river flow
         waterParticles.forEach((p) => {
-          if (p.stage === "runoff") {
-            // Flow toward ocean (rightward) - consistent river speed
-            p.position.x += 0.3 + Math.random() * 0.05;
+          if (p.stage === "river") {
+            // Move along the river curve continuously
+            p.riverProgress =
+              (p.riverProgress || 0) + 0.004 + Math.random() * 0.002;
 
-            // Follow terrain - descend from mountains to ocean in a clear path
-            const progress = (p.position.x + 65) / 110; // 0 at mountains, 1 at ocean
-            const mountainHeight = 10;
-            const terrainHeight = Math.max(
-              0.8,
-              mountainHeight * (1 - progress * 1.1)
-            );
-            p.position.y = terrainHeight + Math.sin(p.position.x * 0.1) * 0.2;
+            if (p.riverProgress >= 1) {
+              // Reached ocean - reset to start for continuous flow
+              p.riverProgress = 0;
+            }
 
-            // River meandering effect - gentle S-curves
-            const baseZ = 0; // Center line
-            const meander = Math.sin(p.position.x * 0.04) * 6;
-            p.position.z = baseZ + meander;
+            if (riverCurve) {
+              // Follow the smooth river curve
+              const point = riverCurve.getPoint(p.riverProgress);
+              const offset = (Math.random() - 0.5) * 2;
+              p.position.set(
+                point.x + offset,
+                point.y +
+                  0.5 +
+                  Math.sin(Date.now() * 0.01 + p.riverProgress * 10) * 0.3,
+                point.z + offset * 0.3
+              );
+            }
 
             p.mesh.position.copy(p.position);
 
-            // Very bright flowing water effect with sparkle
+            // Shimmer effect for flowing water
             const shimmer =
-              0.95 + Math.sin(Date.now() * 0.01 + p.position.x * 0.3) * 0.05;
+              0.9 + Math.sin(Date.now() * 0.008 + p.riverProgress * 20) * 0.1;
             p.mesh.material.opacity = shimmer;
 
-            // Bright color with sparkle variation
-            const sparkle = Math.sin(Date.now() * 0.015 + p.position.x * 0.5);
-            if (sparkle > 0.3) {
-              p.mesh.material.color.setHex(0x64b5f6); // Light blue sparkle
+            // Color variation for sparkle - matching ocean tones
+            const sparkle = Math.sin(Date.now() * 0.012 + p.riverProgress * 15);
+            if (sparkle > 0.5) {
+              p.mesh.material.color.setHex(0x5599cc); // Light sparkle (wave color)
             } else if (sparkle > 0) {
-              p.mesh.material.color.setHex(0x42a5f5); // Medium blue
+              p.mesh.material.color.setHex(0x2878a8); // Medium ocean blue
             } else {
-              p.mesh.material.color.setHex(0x2196f3); // Base bright blue
+              p.mesh.material.color.setHex(0x1e6091); // Base ocean blue
             }
-
-            // Reached ocean - become collection
-            if (p.position.x > 40) {
-              p.stage = "collection";
-              p.position.y = -0.2;
-              p.mesh.material.color.setHex(0x1565c0);
-              p.mesh.scale.setScalar(1); // Reset scale
-            }
-          } else if (p.stage === "collection") {
-            // Gentle ocean movement
-            p.position.y =
-              -0.2 + Math.sin(Date.now() * 0.002 + p.position.x * 0.15) * 0.12;
-            p.mesh.position.copy(p.position);
           }
         });
 

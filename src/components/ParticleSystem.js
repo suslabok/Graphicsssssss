@@ -5,10 +5,10 @@ export const createWaterParticles = (THREE, scene, count = 200) => {
       mesh: new THREE.Mesh(
         new THREE.SphereGeometry(0.35, 12, 12),
         new THREE.MeshLambertMaterial({
-          color: 0x1565c0,
+          color: 0x1e6091,
           transparent: true,
           opacity: 0.95,
-          emissive: 0x0d47a1,
+          emissive: 0x003366,
           emissiveIntensity: 0.4,
           reflectivity: 0.9,
         })
@@ -64,63 +64,70 @@ export const createVaporParticles = (THREE, scene, count = 150) => {
   return vaporParticles;
 };
 
-export const createClouds = (THREE, scene, count = 15) => {
+export const createClouds = (THREE, scene, count = 18) => {
   const clouds = [];
   for (let i = 0; i < count; i++) {
     const cloudGroup = new THREE.Group();
     const cloudParticles = [];
 
-    for (let j = 0; j < 15; j++) {
-      const size = 1.5 + Math.random() * 2;
+    // Create fluffy, beautiful cloud with more particles
+    const numMainPuffs = 18 + Math.floor(Math.random() * 8);
+    for (let j = 0; j < numMainPuffs; j++) {
+      const size = 2 + Math.random() * 2.5;
       const cloudParticle = new THREE.Mesh(
-        new THREE.SphereGeometry(size, 16, 16),
+        new THREE.SphereGeometry(size, 20, 20),
         new THREE.MeshLambertMaterial({
           color: 0xffffff,
           transparent: true,
-          opacity: 0.85,
-          emissive: 0xaabbcc,
-          emissiveIntensity: 0.1,
+          opacity: 0.9,
+          emissive: 0xddeeff,
+          emissiveIntensity: 0.15,
         })
       );
 
-      const angle = (j / 15) * Math.PI * 2;
-      const radius = 2.5 + Math.random() * 2;
-      const height = Math.sin(angle * 2) * 1.5;
+      // Create a more natural cloud shape
+      const angle = (j / numMainPuffs) * Math.PI * 2;
+      const radius = 3 + Math.random() * 2.5;
+      const heightVar = Math.sin(angle * 1.5) * 1.5 + (Math.random() - 0.5) * 2;
       cloudParticle.position.x =
         Math.cos(angle) * radius + (Math.random() - 0.5) * 2;
-      cloudParticle.position.y = height + (Math.random() - 0.5);
+      cloudParticle.position.y = heightVar;
       cloudParticle.position.z =
-        Math.sin(angle) * radius * 0.8 + (Math.random() - 0.5) * 3;
+        Math.sin(angle) * radius * 0.7 + (Math.random() - 0.5) * 3;
 
       cloudGroup.add(cloudParticle);
       cloudParticles.push(cloudParticle);
     }
 
-    for (let k = 0; k < 8; k++) {
+    // Add extra fluffy outer puffs
+    for (let k = 0; k < 12; k++) {
+      const wispSize = 1.2 + Math.random() * 1.0;
       const wispyParticle = new THREE.Mesh(
-        new THREE.SphereGeometry(0.8 + Math.random() * 0.7, 12, 12),
+        new THREE.SphereGeometry(wispSize, 16, 16),
         new THREE.MeshLambertMaterial({
-          color: 0xf5f5f5,
+          color: 0xf8f8ff,
           transparent: true,
-          opacity: 0.4,
+          opacity: 0.5,
+          emissive: 0xeeeeff,
+          emissiveIntensity: 0.1,
         })
       );
-      const wispAngle = (k / 8) * Math.PI * 2;
-      const wispRadius = 4 + Math.random() * 2;
+      const wispAngle = (k / 12) * Math.PI * 2;
+      const wispRadius = 5 + Math.random() * 2;
       wispyParticle.position.x = Math.cos(wispAngle) * wispRadius;
-      wispyParticle.position.y = (Math.random() - 0.5) * 2;
-      wispyParticle.position.z = Math.sin(wispAngle) * wispRadius * 0.6;
+      wispyParticle.position.y = (Math.random() - 0.5) * 2.5;
+      wispyParticle.position.z = Math.sin(wispAngle) * wispRadius * 0.5;
       cloudGroup.add(wispyParticle);
       cloudParticles.push(wispyParticle);
     }
 
-    const startX = 40 + Math.random() * 30;
+    const startX = 40 + Math.random() * 35;
     cloudGroup.position.set(
       startX,
-      40 + Math.random() * 15,
+      42 + Math.random() * 12,
       Math.random() * 80 - 40
     );
-    cloudGroup.scale.set(0.9, 0.9, 0.9);
+    cloudGroup.scale.set(1.0, 0.8, 1.0);
     scene.add(cloudGroup);
 
     clouds.push({
@@ -128,8 +135,10 @@ export const createClouds = (THREE, scene, count = 15) => {
       particles: cloudParticles,
       waterContent: 0,
       maxWaterContent: 2.0,
-      speed: -0.08 - Math.random() * 0.04,
+      speed: -0.06 - Math.random() * 0.03,
       driftPhase: Math.random() * Math.PI * 2,
+      bobPhase: Math.random() * Math.PI * 2,
+      puffPhase: Math.random() * Math.PI * 2,
       stage: "forming",
     });
   }
@@ -188,42 +197,91 @@ export const createGroundwaterParticles = (THREE, scene, count = 40) => {
   return groundwaterParticles;
 };
 
-export const updateWaterParticles = (waterParticles) => {
+export const updateWaterParticles = (waterParticles, riverCurve) => {
   waterParticles.forEach((p) => {
     p.age++;
-    p.shimmerPhase += 0.1;
+    p.shimmerPhase += 0.08;
 
-    if (p.stage === "collection" || p.stage === "runoff") {
-      p.position.y =
-        -0.2 + Math.sin(Date.now() * 0.004 + p.position.x * 0.3) * 0.08;
+    if (
+      p.stage === "collection" ||
+      p.stage === "runoff" ||
+      p.stage === "river"
+    ) {
+      // RIVER FLOW - continuous water flowing in river
+      if (p.stage === "river") {
+        // Move along the river curve
+        p.riverProgress =
+          (p.riverProgress || 0) + 0.003 + Math.random() * 0.002;
 
-      // Water flows toward ocean (rightward if on mountains/left side)
-      if (p.stage === "runoff" && p.position.x < 50) {
-        p.position.x += 0.12; // Flow toward ocean faster
-      } else if (p.position.x > -35 && p.stage === "collection") {
-        p.position.x -= 0.008; // Normal water movement
+        if (p.riverProgress >= 1) {
+          // Reached the ocean - become collection
+          p.stage = "collection";
+          p.position.set(
+            50 + Math.random() * 30,
+            -0.2,
+            Math.random() * 50 - 25
+          );
+          p.riverProgress = 0;
+        } else if (riverCurve) {
+          // Follow the river curve with some variation
+          const point = riverCurve.getPoint(p.riverProgress);
+          const offset = (Math.random() - 0.5) * 3;
+          p.position.set(
+            point.x + offset,
+            point.y + Math.sin(p.shimmerPhase) * 0.3,
+            point.z + offset * 0.5
+          );
+        }
       }
 
-      // Convert runoff to collection when reaching ocean area
-      if (p.stage === "runoff" && p.position.x > 40) {
-        p.stage = "collection";
+      // RUNOFF - water flowing from mountains toward river
+      else if (p.stage === "runoff") {
+        p.position.x += 0.15;
+        p.position.y = Math.max(-0.2, p.position.y - 0.05);
+
+        // When reaching river area, join the river
+        if (p.position.x > -50 && p.position.x < 40) {
+          p.stage = "river";
+          p.riverProgress = Math.max(0, (p.position.x + 65) / 105); // Start at appropriate point
+        }
+
+        // If passed river, go to collection
+        if (p.position.x > 45) {
+          p.stage = "collection";
+        }
+      }
+
+      // COLLECTION - water in ocean, gentle bobbing
+      else if (p.stage === "collection") {
+        p.position.y =
+          -0.2 + Math.sin(Date.now() * 0.003 + p.position.x * 0.2) * 0.1;
+
+        // Slight drift in ocean
+        p.position.x += (Math.random() - 0.5) * 0.02;
+        p.position.z += (Math.random() - 0.5) * 0.02;
+
+        // Keep in ocean area
+        if (p.position.x < 40) p.position.x = 40 + Math.random() * 40;
+        if (p.position.x > 90) p.position.x = 90;
       }
 
       // Enhanced shimmer effect
-      const shimmer = 0.85 + Math.sin(p.shimmerPhase) * 0.2;
-      const colorShift = Math.sin(p.shimmerPhase * 0.5) * 0.1;
+      const shimmer = 0.85 + Math.sin(p.shimmerPhase) * 0.15;
       p.mesh.material.opacity = shimmer;
-      p.mesh.material.emissiveIntensity = 0.3 + colorShift;
+      p.mesh.material.emissiveIntensity =
+        0.25 + Math.sin(p.shimmerPhase * 0.5) * 0.1;
 
-      // Add slight color variation for realism
-      const baseColor = 0x0077ff;
-      const variation = Math.floor(Math.sin(p.shimmerPhase) * 0x001122);
-      p.mesh.material.color.setHex(baseColor + variation);
+      // Color based on stage - use ocean color for all
+      if (p.stage === "river") {
+        p.mesh.material.color.setHex(0x1e6091); // Match ocean blue
+      } else {
+        p.mesh.material.color.setHex(0x1e6091); // Ocean blue
+      }
     }
 
     if (p.age > p.maxAge && p.stage === "evaporated") {
       p.stage = "collection";
-      p.position.set(Math.random() * 80 - 40, -0.2, Math.random() * 50 - 25);
+      p.position.set(50 + Math.random() * 30, -0.2, Math.random() * 50 - 25);
       p.age = 0;
       p.mesh.material.opacity = 0.9;
       p.shimmerPhase = Math.random() * Math.PI * 2;
@@ -360,60 +418,70 @@ export const updateVaporMovement = (vaporParticles, clouds, condensRate) => {
 export const updateClouds = (clouds, precipitationParticles) => {
   clouds.forEach((cloud) => {
     cloud.waterContent = Math.max(cloud.waterContent - 0.001, 0);
-    cloud.driftPhase += 0.02;
+    cloud.driftPhase += 0.015;
+    cloud.bobPhase += 0.02;
+    cloud.puffPhase += 0.008;
 
-    cloud.particles.forEach((p) => {
-      const opacity = 0.7 + cloud.waterContent * 0.3;
-      const grayness = cloud.waterContent > 1.0 ? 0.6 : 1.0;
-      p.material.opacity = Math.min(0.95, opacity);
+    // Beautiful cloud animation - gentle puffing and color changes
+    cloud.particles.forEach((p, idx) => {
+      const opacity = 0.75 + cloud.waterContent * 0.2;
+      const grayness = cloud.waterContent > 1.0 ? 0.65 : 1.0;
+      p.material.opacity = Math.min(0.92, opacity);
       p.material.color.setRGB(grayness, grayness, grayness);
 
-      // Add subtle emissive glow to clouds
-      const glowIntensity = 0.1 + cloud.waterContent * 0.05;
+      // Gentle puffing animation - particles breathe in and out
+      const puffScale = 1 + Math.sin(cloud.puffPhase + idx * 0.3) * 0.08;
+      p.scale.setScalar(puffScale);
+
+      // Subtle glow based on water content
+      const glowIntensity = 0.12 + cloud.waterContent * 0.08;
       p.material.emissiveIntensity = glowIntensity;
     });
 
-    // Move clouds from ocean (right) toward mountains (left)
+    // Smooth cloud movement with gentle bobbing
     cloud.mesh.position.x += cloud.speed;
-    cloud.mesh.position.y += Math.sin(cloud.driftPhase) * 0.08; // Gentle vertical drift
-    cloud.mesh.position.z += Math.cos(cloud.driftPhase * 0.7) * 0.05; // Subtle depth movement
+    cloud.mesh.position.y += Math.sin(cloud.bobPhase) * 0.04; // Gentle up/down bob
+    cloud.mesh.position.z += Math.cos(cloud.driftPhase * 0.6) * 0.03; // Subtle drift
+
+    // Gentle rotation for more life
+    cloud.mesh.rotation.y += 0.0003;
 
     // Update cloud stage based on position
     if (cloud.mesh.position.x > 20) {
-      cloud.stage = "forming"; // Above ocean
+      cloud.stage = "forming";
     } else if (cloud.mesh.position.x > -40 && cloud.mesh.position.x <= 20) {
-      cloud.stage = "traveling"; // Moving toward mountains
+      cloud.stage = "traveling";
     } else if (cloud.mesh.position.x <= -40) {
-      cloud.stage = "raining"; // Over mountains
+      cloud.stage = "raining";
     }
 
     // Reset cloud to ocean side when it goes too far left
     if (cloud.mesh.position.x < -90) {
-      cloud.mesh.position.x = 70; // Reset to ocean
+      cloud.mesh.position.x = 75;
       cloud.waterContent = 0;
       cloud.stage = "forming";
     }
 
     // Rain MORE over mountains (left side, x < -40)
     const isOverMountains = cloud.mesh.position.x < -40;
-    const rainChance = isOverMountains ? 0.15 : 0.03; // Much higher rain over mountains
+    const rainChance = isOverMountains ? 0.12 : 0.025;
 
     if (cloud.waterContent > 1.0 && Math.random() < rainChance) {
       const precip = precipitationParticles.find((p) => !p.active);
       if (precip) {
         precip.active = true;
         precip.position.set(
-          cloud.mesh.position.x + (Math.random() - 0.5) * 12,
-          cloud.mesh.position.y - 3,
-          cloud.mesh.position.z + (Math.random() - 0.5) * 8
+          cloud.mesh.position.x + (Math.random() - 0.5) * 14,
+          cloud.mesh.position.y - 4,
+          cloud.mesh.position.z + (Math.random() - 0.5) * 10
         );
-        precip.velocity.y = -0.25 - Math.random() * 0.1;
-        precip.velocity.x = (Math.random() - 0.5) * 0.04;
+        precip.velocity.y = -0.22 - Math.random() * 0.08;
+        precip.velocity.x = (Math.random() - 0.5) * 0.03;
         precip.mesh.position.copy(precip.position);
-        precip.mesh.material.opacity = 0.9;
+        precip.mesh.material.opacity = 0.85;
         precip.age = 0;
-        precip.landingX = precip.position.x; // Store where it will land
-        cloud.waterContent -= 0.15;
+        precip.landingX = precip.position.x;
+        cloud.waterContent -= 0.12;
       }
     }
   });
