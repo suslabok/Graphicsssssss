@@ -179,14 +179,6 @@ export const createEducationalLandscape = (THREE, scene) => {
     { x: 40, z: 5, radius: 10, height: 1 },
     { x: 42, z: -5, radius: 5, height: 1 },
     { x: 42, z: 8, radius: 15, height: 1 },
-    { x: -50, z: 0, radius: 18, height: 19 },
-    { x: -47, z: -50, radius: 17, height: 17 },
-    { x: -47, z: 50, radius: 17, height: 17 },
-    { x: -43, z: -10, radius: 19, height: 16 },
-    { x: -43, z: 10, radius: 19, height: 16 },
-    { x: -40, z: 0, radius: 20, height: 15 },
-    { x: -40, z: -50, radius: 18, height: 14 },
-    { x: -40, z: 50, radius: 18, height: 14 },
   ];
 
   hillPositions.forEach(({ x, z, radius, height }) => {

@@ -65,7 +65,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
           w.position.set(
             40 + Math.random() * 45,
             -0.5 + Math.random() * 0.5,
-            (Math.random() - 0.5) * 70
+            (Math.random() - 0.5) * 70,
           );
           w.mesh.position.copy(w.position);
           w.mesh.scale.setScalar(1);
@@ -116,7 +116,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
         };
         mtlLoaderScript.onerror = () => {
           console.warn(
-            "Failed to load MTLLoader, continuing without materials"
+            "Failed to load MTLLoader, continuing without materials",
           );
           initializeScene();
         };
@@ -197,7 +197,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
       60,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
-      1000
+      1000,
     );
     // Position camera for angle view - nice perspective view
     camera.position.set(80, 60, 80);
@@ -212,7 +212,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
     });
     renderer.setSize(
       containerRef.current.clientWidth,
-      containerRef.current.clientHeight
+      containerRef.current.clientHeight,
     );
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -226,7 +226,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
     if (window.THREE.OrbitControls) {
       const controls = new window.THREE.OrbitControls(
         camera,
-        renderer.domElement
+        renderer.domElement,
       );
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
@@ -322,7 +322,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
         updatePrecipitation(
           precipitationParticles,
           waterParticles,
-          groundwaterParticles
+          groundwaterParticles,
         );
         updateGroundwater(groundwaterParticles, waterParticles);
       } else if (currentStep === "evaporation") {
@@ -365,7 +365,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
             vapor.position.set(
               40 + Math.random() * 45, // Ocean area (x: 40-85)
               0.5 + Math.random() * 1.5, // Near water surface
-              (Math.random() - 0.5) * 70
+              (Math.random() - 0.5) * 70,
             );
             vapor.velocity.y = 0.12 + Math.random() * 0.1; // Rise upward
             vapor.velocity.x = -0.015; // Slight drift toward land
@@ -451,7 +451,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
           // Gradually increase water content (cloud forming)
           cloud.waterContent = Math.min(
             cloud.maxWaterContent,
-            cloud.waterContent + 0.008
+            cloud.waterContent + 0.008,
           );
 
           // Make clouds visibly grow with water content
@@ -489,7 +489,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
             vapor.position.set(
               targetCloud.mesh.position.x + 20 + Math.random() * 15,
               targetCloud.mesh.position.y + (Math.random() - 0.5) * 10,
-              targetCloud.mesh.position.z + (Math.random() - 0.5) * 15
+              targetCloud.mesh.position.z + (Math.random() - 0.5) * 15,
             );
             vapor.velocity.x = -0.15;
             vapor.velocity.y = 0.02;
@@ -590,8 +590,8 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
                 ? 3
                 : 2
               : Math.random() < rainChance * 0.5
-              ? 1
-              : 0;
+                ? 1
+                : 0;
 
           for (let i = 0; i < rainCount; i++) {
             const precip = precipitationParticles.find((p) => !p.active);
@@ -604,7 +604,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
               precip.position.set(
                 rainX,
                 cloud.mesh.position.y - 4,
-                cloud.mesh.position.z + (Math.random() - 0.5) * 14
+                cloud.mesh.position.z + (Math.random() - 0.5) * 14,
               );
               precip.velocity.y = -0.5 - Math.random() * 0.3; // Fast falling rain
               precip.velocity.x = (Math.random() - 0.5) * 0.03;
@@ -673,7 +673,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
               w.stage === "evaporated" ||
               (w.stage === "collection" && Math.random() < 0.15) ||
               w.stage === "ocean" ||
-              w.position.y < -50
+              w.position.y < -50,
           );
           if (water) {
             water.stage = "river";
@@ -696,7 +696,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
             // Move along the river curve - use particle's own speed for variety
             const speed = p.riverSpeed || 0.003;
             p.riverProgress = (p.riverProgress || 0) + speed;
-
+            p.mesh.visible = true;
             if (p.riverProgress >= 1) {
               // Reached ocean - reset to mountain start for continuous flow
               p.riverProgress = Math.random() * 0.1; // Restart near mountain
@@ -719,7 +719,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
                 point.y +
                   6 + // Above river surface
                   Math.sin(p.riverProgress * 10 + offset) * 0.3, // Gentle wave, no time-based animation
-                point.z + perpZ * offset * 0.5
+                point.z + perpZ * offset * 0.5,
               );
             }
 
