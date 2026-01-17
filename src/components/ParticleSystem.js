@@ -1,26 +1,29 @@
-export const createWaterParticles = (THREE, scene, count = 200) => {
+export const createWaterParticles = (THREE, scene, count = 300) => {
   const waterParticles = [];
   for (let i = 0; i < count; i++) {
-    // Assign some particles to river, most to ocean
-    const isRiverParticle = i < 50; // First 50 particles start in river
+    // Assign MORE particles to river for better visibility
+    const isRiverParticle = i < 150; // First 150 particles start in river (more coverage)
+
+    // River particles spread along entire river with random offsets
+    const riverProgressValue = isRiverParticle ? Math.random() : 0; // Random spread along river
 
     const particle = {
       mesh: new THREE.Mesh(
-        new THREE.SphereGeometry(0.35, 12, 12),
+        new THREE.SphereGeometry(isRiverParticle ? 0.5 : 0.35, 12, 12), // River particles
         new THREE.MeshLambertMaterial({
-          color: 0x1e6091,
+          color: isRiverParticle ? 0x1565c0 : 0x1e6091, // Dark blue for river
           transparent: true,
-          opacity: 0.95,
-          emissive: 0x003366,
-          emissiveIntensity: 0.4,
+          opacity: isRiverParticle ? 0.85 : 0.95,
+          emissive: isRiverParticle ? 0x0d47a1 : 0x003366, // Dark blue emissive
+          emissiveIntensity: isRiverParticle ? 0.5 : 0.4,
           reflectivity: 0.9,
         })
       ),
       position: isRiverParticle
         ? new THREE.Vector3(
-            -50 + (i / 50) * 90, // Spread along river path
-            10 + Math.random() * 5,
-            (Math.random() - 0.5) * 8
+            -50 + riverProgressValue * 90, // Mountain (-50) to Ocean (40)
+            20 + Math.random() * 5, // HIGH position - above river
+            (Math.random() - 0.5) * 8 // Wider spread across river width
           )
         : new THREE.Vector3(
             45 + Math.random() * 40, // Ocean area
@@ -29,7 +32,9 @@ export const createWaterParticles = (THREE, scene, count = 200) => {
           ),
       velocity: new THREE.Vector3(0, 0, 0),
       stage: isRiverParticle ? "river" : "collection",
-      riverProgress: isRiverParticle ? i / 50 : 0,
+      riverProgress: riverProgressValue, // Spread along entire river
+      riverOffset: isRiverParticle ? (Math.random() - 0.5) * 8 : 0, // Width offset
+      riverSpeed: isRiverParticle ? 0.002 + Math.random() * 0.002 : 0, // Varied speeds
       age: 0,
       maxAge: 800 + Math.random() * 400,
       shimmerPhase: Math.random() * Math.PI * 2, // For shimmer effect
@@ -38,7 +43,7 @@ export const createWaterParticles = (THREE, scene, count = 200) => {
     particle.mesh.castShadow = true;
     particle.mesh.receiveShadow = true;
     if (isRiverParticle) {
-      particle.mesh.scale.setScalar(1.5 + Math.random() * 0.5);
+      particle.mesh.scale.setScalar(2.0 + Math.random() * 2.0); // Varied sizes
     }
     scene.add(particle.mesh);
     waterParticles.push(particle);

@@ -645,7 +645,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       const gemType = gemColors[Math.floor(Math.random() * gemColors.length)];
 
       for (let j = 0; j < gemsInCluster; j++) {
-        const gemSize = 1.0 + Math.random() * 1.5; // BIGGER gems
+        const gemSize = 1.0 + Math.random() * 1.5;
         const gemGeometry = new THREE.OctahedronGeometry(gemSize, 0);
         const gemMaterial = new THREE.MeshLambertMaterial({
           color: gemType.color,
