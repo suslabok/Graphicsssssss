@@ -81,7 +81,7 @@ export const createEducationalLandscape = (THREE, scene) => {
   }
   terrainGeometry.setAttribute(
     "color",
-    new THREE.Float32BufferAttribute(colors, 3)
+    new THREE.Float32BufferAttribute(colors, 3),
   );
   terrainMaterial.vertexColors = true;
 
@@ -191,7 +191,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       0,
       Math.PI * 2,
       0,
-      Math.PI / 2
+      Math.PI / 2,
     );
     const hillMaterial = new THREE.MeshLambertMaterial({
       color: 0x4a7c3e,
@@ -247,7 +247,7 @@ export const createEducationalLandscape = (THREE, scene) => {
   });
   const mountainGround = new THREE.Mesh(
     mountainGroundGeometry,
-    mountainGroundMaterial
+    mountainGroundMaterial,
   );
   mountainGround.rotation.x = -Math.PI / 2;
   mountainGround.position.set(-60, 0.2, 0);
@@ -287,7 +287,7 @@ export const createEducationalLandscape = (THREE, scene) => {
     100, // More segments for smoothness
     5, // Slightly wider
     24, // More radial segments for smooth look
-    false
+    false,
   );
   const riverMaterial = new THREE.MeshLambertMaterial({
     color: 0x1e6091,
@@ -308,7 +308,7 @@ export const createEducationalLandscape = (THREE, scene) => {
     100,
     5.5, // Slightly larger to sit on top
     24,
-    false
+    false,
   );
   const riverSurfaceMaterial = new THREE.MeshLambertMaterial({
     color: 0x5599cc,
@@ -320,7 +320,7 @@ export const createEducationalLandscape = (THREE, scene) => {
   });
   const riverSurfaceMesh = new THREE.Mesh(
     riverSurfaceGeometry,
-    riverSurfaceMaterial
+    riverSurfaceMaterial,
   );
   riverSurfaceMesh.position.y = 0.5;
   scene.add(riverSurfaceMesh);
@@ -457,7 +457,7 @@ export const createEducationalLandscape = (THREE, scene) => {
     }
     mountainGeometry.setAttribute(
       "color",
-      new THREE.Float32BufferAttribute(colors, 3)
+      new THREE.Float32BufferAttribute(colors, 3),
     );
 
     const mountainMaterial = new THREE.MeshLambertMaterial({
@@ -484,7 +484,7 @@ export const createEducationalLandscape = (THREE, scene) => {
         peakRadius,
         peakHeight,
         12,
-        4
+        4,
       );
       const peakPositions = peakGeometry.attributes.position;
 
@@ -520,7 +520,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       }
       peakGeometry.setAttribute(
         "color",
-        new THREE.Float32BufferAttribute(peakColors, 3)
+        new THREE.Float32BufferAttribute(peakColors, 3),
       );
 
       const peakMaterial = new THREE.MeshLambertMaterial({
@@ -531,7 +531,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       peak.position.set(
         x + Math.cos(peakAngle) * peakDist,
         peakHeight / 2,
-        z + Math.sin(peakAngle) * peakDist
+        z + Math.sin(peakAngle) * peakDist,
       );
       peak.castShadow = true;
       peak.receiveShadow = true;
@@ -548,7 +548,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       const cliffGeometry = new THREE.BoxGeometry(
         3 + Math.random() * 4,
         cliffHeight,
-        2 + Math.random() * 3
+        2 + Math.random() * 3,
       );
 
       // Distort cliff for natural look
@@ -569,7 +569,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       cliff.position.set(
         x + Math.cos(cliffAngle) * cliffDist,
         cliffHeight / 2 + Math.random() * height * 0.2,
-        z + Math.sin(cliffAngle) * cliffDist
+        z + Math.sin(cliffAngle) * cliffDist,
       );
       cliff.rotation.y = cliffAngle + Math.PI / 2;
       cliff.rotation.x = (Math.random() - 0.5) * 0.3;
@@ -607,12 +607,12 @@ export const createEducationalLandscape = (THREE, scene) => {
       rock.rotation.set(
         Math.random() * Math.PI,
         Math.random() * Math.PI,
-        Math.random() * Math.PI
+        Math.random() * Math.PI,
       );
       rock.scale.set(
         0.8 + Math.random() * 0.4,
         0.6 + Math.random() * 0.8,
-        0.8 + Math.random() * 0.4
+        0.8 + Math.random() * 0.4,
       );
       rock.castShadow = true;
       rock.receiveShadow = true;
@@ -662,12 +662,12 @@ export const createEducationalLandscape = (THREE, scene) => {
         gem.position.set(
           clusterX + offsetX,
           clusterY + j * 0.7,
-          clusterZ + offsetZ
+          clusterZ + offsetZ,
         );
         gem.rotation.set(
           Math.random() * Math.PI * 0.3,
           Math.random() * Math.PI,
-          Math.random() * Math.PI * 0.3
+          Math.random() * Math.PI * 0.3,
         );
         gem.scale.y = 2.0 + Math.random() * 2.0; // Taller crystals
         gem.castShadow = true;
@@ -691,7 +691,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       const crystalGeometry = new THREE.ConeGeometry(
         crystalSize * 0.6,
         crystalSize * 3,
-        6
+        6,
       );
       const gemType = gemColors[Math.floor(Math.random() * gemColors.length)];
       const crystalMaterial = new THREE.MeshLambertMaterial({
@@ -715,7 +715,7 @@ export const createEducationalLandscape = (THREE, scene) => {
         const smallGeometry = new THREE.ConeGeometry(
           smallSize * 0.4,
           smallSize * 2.2,
-          6
+          6,
         );
         const smallCrystal = new THREE.Mesh(smallGeometry, crystalMaterial);
         const smallAngle =
@@ -723,7 +723,7 @@ export const createEducationalLandscape = (THREE, scene) => {
         smallCrystal.position.set(
           crystalX + Math.cos(smallAngle) * 1.8,
           crystalY + smallSize * 0.5,
-          crystalZ + Math.sin(smallAngle) * 1.8
+          crystalZ + Math.sin(smallAngle) * 1.8,
         );
         smallCrystal.rotation.x = (Math.random() - 0.5) * 0.6;
         smallCrystal.rotation.z = (Math.random() - 0.5) * 0.6;
@@ -767,7 +767,7 @@ export const createEducationalLandscape = (THREE, scene) => {
         miniCrystal.position.set(
           spireX + Math.cos(miniAngle) * 2,
           spireY + miniSize * 0.4,
-          spireZ + Math.sin(miniAngle) * 2
+          spireZ + Math.sin(miniAngle) * 2,
         );
         miniCrystal.rotation.x = (Math.random() - 0.5) * 0.5;
         miniCrystal.rotation.z = (Math.random() - 0.5) * 0.5;
@@ -805,7 +805,7 @@ export const createEducationalLandscape = (THREE, scene) => {
         ringCrystal.position.set(
           x + Math.cos(ringAngle) * 4,
           height * 0.4 + ringSize * 0.5,
-          z + Math.sin(ringAngle) * 4
+          z + Math.sin(ringAngle) * 4,
         );
         ringCrystal.rotation.x = (Math.random() - 0.5) * 0.3;
         ringCrystal.rotation.z = (Math.random() - 0.5) * 0.3;
@@ -841,12 +841,12 @@ export const createEducationalLandscape = (THREE, scene) => {
         veinGem.position.set(
           gemX + (Math.random() - 0.5) * 1.5,
           gemY,
-          gemZ + (Math.random() - 0.5) * 1.5
+          gemZ + (Math.random() - 0.5) * 1.5,
         );
         veinGem.rotation.set(
           Math.random() * Math.PI,
           Math.random() * Math.PI,
-          Math.random() * Math.PI
+          Math.random() * Math.PI,
         );
         veinGem.scale.y = 1.5 + Math.random() * 1.5;
         veinGem.castShadow = true;
@@ -897,7 +897,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       const ledgeGeometry = new THREE.BoxGeometry(
         3 + Math.random() * 2,
         1 + Math.random() * 1.5,
-        2 + Math.random() * 2
+        2 + Math.random() * 2,
       );
       const ledgeColor =
         rockColors[Math.floor(Math.random() * rockColors.length)];
@@ -938,7 +938,7 @@ export const createEducationalLandscape = (THREE, scene) => {
         0,
         Math.PI * 2,
         0,
-        Math.PI / 2
+        Math.PI / 2,
       );
       const snowPatchMaterial = new THREE.MeshLambertMaterial({
         color: 0xf5f5f5,
@@ -949,7 +949,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       snowPatch.position.set(
         x + Math.cos(angle) * radius,
         heightRatio * height,
-        z + Math.sin(angle) * radius
+        z + Math.sin(angle) * radius,
       );
       snowPatch.scale.y = 0.3;
       scene.add(snowPatch);
@@ -1045,20 +1045,20 @@ export const createEducationalLandscape = (THREE, scene) => {
               (error) => {
                 console.warn(
                   "Failed to load 3D tree model, using fallback:",
-                  error
+                  error,
                 );
                 createSimpleTree(x, z);
-              }
+              },
             );
           },
           undefined,
           (error) => {
             console.warn(
               "Failed to load MTL, loading OBJ without materials:",
-              error
+              error,
             );
             loadTreeWithoutMaterial(x, z);
-          }
+          },
         );
       } else {
         loadTreeWithoutMaterial(x, z);
@@ -1102,7 +1102,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       (error) => {
         console.warn("Failed to load 3D tree model, using fallback:", error);
         createSimpleTree(x, z);
-      }
+      },
     );
   }
 
@@ -1114,7 +1114,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       0.3,
       0.45,
       treeHeight * 0.6,
-      12
+      12,
     );
     const trunkMaterial = new THREE.MeshLambertMaterial({
       color: 0x5c4033,
@@ -1133,7 +1133,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       const canopyGeometry = new THREE.ConeGeometry(
         2 - i * 0.45,
         treeHeight * 0.5,
-        14
+        14,
       );
       const canopyMaterial = new THREE.MeshLambertMaterial({
         color: canopyColors[Math.floor(Math.random() * canopyColors.length)],
@@ -1145,7 +1145,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       canopy.position.set(
         x + (Math.random() - 0.5) * 0.5,
         yOffset + treeHeight * 0.65 + i * 0.75,
-        z + (Math.random() - 0.5) * 0.5
+        z + (Math.random() - 0.5) * 0.5,
       );
       canopy.castShadow = true;
       canopy.receiveShadow = true;
@@ -1158,7 +1158,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       branch.position.set(
         x + Math.cos(angle) * 0.35,
         yOffset + treeHeight * 0.4 + j * 0.25,
-        z + Math.sin(angle) * 0.35
+        z + Math.sin(angle) * 0.35,
       );
       branch.rotation.z = Math.PI / 4;
       branch.rotation.y = angle;
@@ -1188,126 +1188,15 @@ export const createEducationalLandscape = (THREE, scene) => {
         opacity: 0.6,
         emissive: 0x001144,
         emissiveIntensity: 0.5,
-      })
+      }),
     );
     flowIndicator.position.set(
       (Math.random() - 0.5) * 180,
       -12 + (Math.random() - 0.5) * 3,
-      (Math.random() - 0.5) * 100
+      (Math.random() - 0.5) * 100,
     );
     scene.add(flowIndicator);
   }
-
-  const createLabelSign = (text, subtext, position, color) => {
-    const signGroup = new THREE.Group();
-
-    const signWidth = 18;
-    const signHeight = 8;
-    const signGeometry = new THREE.PlaneGeometry(signWidth, signHeight);
-    const signMaterial = new THREE.MeshBasicMaterial({
-      color: 0x1e293b,
-      transparent: true,
-      opacity: 0.9,
-      side: THREE.DoubleSide,
-    });
-    const signBoard = new THREE.Mesh(signGeometry, signMaterial);
-    signGroup.add(signBoard);
-
-    const borderGeometry = new THREE.PlaneGeometry(
-      signWidth + 0.5,
-      signHeight + 0.5
-    );
-    const borderMaterial = new THREE.MeshBasicMaterial({
-      color: color,
-      transparent: true,
-      opacity: 0.8,
-      side: THREE.DoubleSide,
-    });
-    const border = new THREE.Mesh(borderGeometry, borderMaterial);
-    border.position.z = -0.1;
-    signGroup.add(border);
-
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.width = 512;
-    canvas.height = 256;
-
-    ctx.fillStyle = "rgba(30, 41, 59, 0.95)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.strokeStyle = `#${color.toString(16).padStart(6, "0")}`;
-    ctx.lineWidth = 8;
-    ctx.strokeRect(4, 4, canvas.width - 8, canvas.height - 8);
-
-    ctx.fillStyle = `#${color.toString(16).padStart(6, "0")}`;
-    ctx.font = "bold 48px Segoe UI, Arial, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText(text, canvas.width / 2, 80);
-
-    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
-    ctx.font = "24px Segoe UI, Arial, sans-serif";
-
-    const words = subtext.split(" ");
-    let line = "";
-    let y = 140;
-    const maxWidth = 460;
-
-    for (let i = 0; i < words.length; i++) {
-      const testLine = line + words[i] + " ";
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth && i > 0) {
-        ctx.fillText(line, canvas.width / 2, y);
-        line = words[i] + " ";
-        y += 35;
-      } else {
-        line = testLine;
-      }
-    }
-    ctx.fillText(line, canvas.width / 2, y);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.needsUpdate = true;
-
-    const textSignMaterial = new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: true,
-      side: THREE.DoubleSide,
-    });
-    const textSign = new THREE.Mesh(signGeometry, textSignMaterial);
-    textSign.position.z = 0.1;
-    signGroup.add(textSign);
-
-    signGroup.position.copy(position);
-    signGroup.rotation.y = Math.PI;
-
-    scene.add(signGroup);
-    return signGroup;
-  };
-
-  createLabelSign(
-    "1. Evaporation",
-    "Sun heats water in oceans",
-    new THREE.Vector3(55, -15, 55),
-    0x00bfff
-  );
-  createLabelSign(
-    "2. Condensation",
-    "Water vapor forms clouds",
-    new THREE.Vector3(0, -15, 55),
-    0x87ceeb
-  );
-  createLabelSign(
-    "3. Precipitation",
-    "Water falls as rain when clouds get heavy",
-    new THREE.Vector3(-30, -15, 55),
-    0x4169e1
-  );
-  createLabelSign(
-    "4. Collection",
-    "Water gathers in rivers, lakes and oceans",
-    new THREE.Vector3(-55, -15, 55),
-    0x1e90ff
-  );
 
   landscape.trees = treeLocations;
   landscape.mountains = mountains;
@@ -1324,9 +1213,9 @@ export const createSun = (THREE, scene) => {
       color: 0xffd700,
       emissive: 0xffd700,
       emissiveIntensity: 1.0,
-    })
+    }),
   );
-  sun.position.set(70, 80, 40);
+  sun.position.set(70, 80, -40);
   scene.add(sun);
 
   const coronaGeometry = new THREE.SphereGeometry(12, 32, 32);
@@ -1338,7 +1227,7 @@ export const createSun = (THREE, scene) => {
     emissiveIntensity: 0.6,
   });
   const corona = new THREE.Mesh(coronaGeometry, coronaMaterial);
-  corona.position.set(70, 80, 40);
+  corona.position.set(70, 80, -40);
   scene.add(corona);
 
   const outerGlow = new THREE.Mesh(
@@ -1349,9 +1238,9 @@ export const createSun = (THREE, scene) => {
       opacity: 0.15,
       emissive: 0xffaa00,
       emissiveIntensity: 0.3,
-    })
+    }),
   );
-  outerGlow.position.set(70, 80, 40);
+  outerGlow.position.set(70, 80, -40);
   scene.add(outerGlow);
 
   for (let i = 0; i < 16; i++) {
@@ -1369,8 +1258,8 @@ export const createSun = (THREE, scene) => {
 
     const x = Math.cos(angle) * 15;
     const z = Math.sin(angle) * 15;
-    ray.position.set(70 + x, 80, 40 + z);
-    ray.lookAt(new THREE.Vector3(70 + x * 2, 80, 40 + z * 2));
+    ray.position.set(70 + x, 80, -40 + z);
+    ray.lookAt(new THREE.Vector3(70 + x * 2, 80, -40 + z * 2));
     scene.add(ray);
   }
 
@@ -1381,7 +1270,7 @@ export const createSun = (THREE, scene) => {
         color: 0xffee88,
         transparent: true,
         opacity: 0.4,
-      })
+      }),
     );
     const radius = 25 + Math.random() * 15;
     const theta = Math.random() * Math.PI * 2;
@@ -1389,7 +1278,7 @@ export const createSun = (THREE, scene) => {
     particle.position.set(
       70 + radius * Math.sin(phi) * Math.cos(theta),
       80 + radius * Math.cos(phi),
-      40 + radius * Math.sin(phi) * Math.sin(theta)
+      40 + radius * Math.sin(phi) * Math.sin(theta),
     );
     scene.add(particle);
   }
@@ -1402,7 +1291,7 @@ export const createLighting = (THREE, scene) => {
   scene.add(ambientLight);
 
   const directionalLight = new THREE.DirectionalLight(0xfff4e6, 1.0);
-  directionalLight.position.set(60, 80, 40);
+  directionalLight.position.set(60, 80, -40);
   directionalLight.castShadow = true;
   directionalLight.shadow.mapSize.width = 2048;
   directionalLight.shadow.mapSize.height = 2048;

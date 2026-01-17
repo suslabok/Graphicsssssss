@@ -424,8 +424,6 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
       } else if (currentStep === "condensation") {
         // CONDENSATION: Clouds form and travel toward mountains
 
-        // Make all clouds visible again
-        // Hide precipitation particles (no rain during condensation)
         precipitationParticles.forEach((p) => {
           if (p.active) {
             p.active = false;
@@ -537,7 +535,6 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
       } else if (currentStep === "precipitation") {
         // PRECIPITATION: Heavy rain falls mostly over mountains and hills
 
-        // Hide vapor particles (no evaporation during precipitation)
         vaporParticles.forEach((v) => {
           if (v.active) {
             v.active = false;
@@ -681,20 +678,18 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
           if (water) {
             water.stage = "river";
             // Spread particles along the ENTIRE river length for full coverage
-            water.riverProgress = Math.random(); // Random position along entire river
+            water.riverProgress = Math.random();
             water.mesh.material.opacity = 0.85;
             water.mesh.material.color.setHex(0x1565c0); // Dark blue color
             water.mesh.material.emissive.setHex(0x0d47a1); // Dark blue emissive
             water.mesh.material.emissiveIntensity = 0.5;
             // Varied sizes for more natural look
             water.mesh.scale.setScalar(2.0 + Math.random() * 2.0);
-            // Store a unique offset for each particle so they spread across river width
             water.riverOffset = (Math.random() - 0.5) * 8; // Wider spread across river
             water.riverSpeed = 0.002 + Math.random() * 0.002; // Varied speeds
           }
         }
 
-        // Update all water particles for continuous river flow
         // Flow direction: Mountain (progress 0) -> Ocean (progress 1)
         waterParticles.forEach((p) => {
           if (p.stage === "river") {
