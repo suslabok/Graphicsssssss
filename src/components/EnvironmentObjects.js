@@ -631,8 +631,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       { color: 0xa0a8b0, emissive: 0x889098, name: "silver" },
     ];
 
-    // Add MANY MORE gem clusters on mountains (12-20 clusters)
-    const numGemClusters = 12 + Math.floor(Math.random() * 8);
+    const numGemClusters = 6 + Math.floor(Math.random() * 4);
     for (let i = 0; i < numGemClusters; i++) {
       const angle = (i / numGemClusters) * Math.PI * 2 + Math.random() * 0.5;
       const heightRatio = 0.15 + Math.random() * 0.6;
@@ -642,8 +641,7 @@ export const createEducationalLandscape = (THREE, scene) => {
       const clusterY = heightRatio * height + 1;
       const clusterZ = z + Math.sin(angle) * radius;
 
-      // Create a cluster of 4-8 gems
-      const gemsInCluster = 4 + Math.floor(Math.random() * 5);
+      const gemsInCluster = 2 + Math.floor(Math.random() * 3);
       const gemType = gemColors[Math.floor(Math.random() * gemColors.length)];
 
       for (let j = 0; j < gemsInCluster; j++) {
@@ -677,8 +675,8 @@ export const createEducationalLandscape = (THREE, scene) => {
       }
     }
 
-    // Add BIGGER crystal formations (6-10 formations)
-    const numCrystals = 6 + Math.floor(Math.random() * 4);
+    // Add crystal formations (reduced - 3-5 formations)
+    const numCrystals = 3 + Math.floor(Math.random() * 3);
     for (let i = 0; i < numCrystals; i++) {
       const angle = (i / numCrystals) * Math.PI * 2 + Math.random() * 0.3;
       const heightRatio = 0.2 + Math.random() * 0.45;
@@ -710,8 +708,8 @@ export const createEducationalLandscape = (THREE, scene) => {
       crystal.castShadow = true;
       scene.add(crystal);
 
-      // More surrounding crystals (6-8 around each)
-      const numSurrounding = 6 + Math.floor(Math.random() * 3);
+      // Surrounding crystals (3-4 around each)
+      const numSurrounding = 3 + Math.floor(Math.random() * 2);
       for (let j = 0; j < numSurrounding; j++) {
         const smallSize = 0.8 + Math.random() * 1.0;
         const smallGeometry = new THREE.ConeGeometry(
@@ -734,8 +732,8 @@ export const createEducationalLandscape = (THREE, scene) => {
       }
     }
 
-    // Add GIANT crystal spires (2-4 per mountain)
-    const numSpires = 2 + Math.floor(Math.random() * 3);
+    // Add crystal spires (1-2 per mountain)
+    const numSpires = 1 + Math.floor(Math.random() * 2);
     for (let i = 0; i < numSpires; i++) {
       const spireAngle = (i / numSpires) * Math.PI * 2 + Math.random() * 0.5;
       const spireRadius = baseRadius * 0.55;
@@ -760,9 +758,9 @@ export const createEducationalLandscape = (THREE, scene) => {
       spire.castShadow = true;
       scene.add(spire);
 
-      // Add more crystals around the spire (6)
-      for (let k = 0; k < 6; k++) {
-        const miniAngle = (k / 6) * Math.PI * 2;
+      // Add crystals around the spire (3)
+      for (let k = 0; k < 3; k++) {
+        const miniAngle = (k / 3) * Math.PI * 2;
         const miniSize = 1.2 + Math.random() * 0.8;
         const miniGeometry = new THREE.ConeGeometry(0.6, miniSize * 2, 6);
         const miniCrystal = new THREE.Mesh(miniGeometry, spireMaterial);
@@ -778,8 +776,8 @@ export const createEducationalLandscape = (THREE, scene) => {
       }
     }
 
-    // Add MASSIVE centerpiece crystal on some mountains
-    if (Math.random() > 0.3) {
+    // Add centerpiece crystal on some mountains (less frequent)
+    if (Math.random() > 0.6) {
       const massiveType =
         gemColors[Math.floor(Math.random() * gemColors.length)];
       const massiveHeight = 8 + Math.random() * 4;
@@ -798,9 +796,9 @@ export const createEducationalLandscape = (THREE, scene) => {
       massiveCrystal.castShadow = true;
       scene.add(massiveCrystal);
 
-      // Ring of crystals around massive one
-      for (let r = 0; r < 8; r++) {
-        const ringAngle = (r / 8) * Math.PI * 2;
+      // Ring of crystals around massive one (reduced)
+      for (let r = 0; r < 4; r++) {
+        const ringAngle = (r / 4) * Math.PI * 2;
         const ringSize = 1.5 + Math.random() * 1;
         const ringGeometry = new THREE.ConeGeometry(0.8, ringSize * 2.5, 6);
         const ringCrystal = new THREE.Mesh(ringGeometry, massiveMaterial);
@@ -816,12 +814,12 @@ export const createEducationalLandscape = (THREE, scene) => {
       }
     }
 
-    // Add gem veins running along mountain surface (3-5 veins)
-    const numVeins = 3 + Math.floor(Math.random() * 3);
+    // Add gem veins running along mountain surface (1-2 veins)
+    const numVeins = 1 + Math.floor(Math.random() * 2);
     for (let v = 0; v < numVeins; v++) {
       const veinAngle = (v / numVeins) * Math.PI * 2 + Math.random() * 0.5;
       const veinType = gemColors[Math.floor(Math.random() * gemColors.length)];
-      const veinLength = 8 + Math.floor(Math.random() * 6);
+      const veinLength = 4 + Math.floor(Math.random() * 4);
 
       for (let g = 0; g < veinLength; g++) {
         const veinRadius = baseRadius * (0.4 + g * 0.05);
@@ -856,10 +854,10 @@ export const createEducationalLandscape = (THREE, scene) => {
       }
     }
 
-    // Keep some grey minerals for texture variety (increased)
+    // Keep some grey minerals for texture variety (reduced)
     const mineralColors = [0x5a5a5a, 0x6a6a6a, 0x4a4a4a, 0x7a7a7a, 0x888888];
 
-    const numMinerals = 6 + Math.floor(Math.random() * 4); // MORE minerals
+    const numMinerals = 3 + Math.floor(Math.random() * 3);
     for (let i = 0; i < numMinerals; i++) {
       const angle = Math.random() * Math.PI * 2;
       const heightRatio = 0.15 + Math.random() * 0.5;
@@ -1307,7 +1305,7 @@ export const createEducationalLandscape = (THREE, scene) => {
   createLabelSign(
     "4. Collection",
     "Water gathers in rivers, lakes and oceans",
-    new THREE.Vector3(-70, -15, 55),
+    new THREE.Vector3(-55, -15, 55),
     0x1e90ff
   );
 

@@ -648,21 +648,22 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
           }
         });
 
-        // CONTINUOUS river flow - spawn water at mountain start
-        const spawnCount = 3;
+        // CONTINUOUS river flow - spawn MORE water at mountain start
+        const spawnCount = 8; // Increased from 3 to 8
         for (let i = 0; i < spawnCount; i++) {
           const water = waterParticles.find(
             (w) =>
               w.stage === "evaporated" ||
-              w.stage === "collection" ||
+              (w.stage === "collection" && Math.random() < 0.1) ||
+              w.stage === "ocean" ||
               w.position.y < -50
           );
           if (water) {
             water.stage = "river";
-            water.riverProgress = 0; // Start at beginning of river
+            water.riverProgress = Math.random() * 0.3; // Spread along river start
             water.mesh.material.opacity = 0.95;
             water.mesh.material.color.setHex(0x1e6091); // Match ocean color
-            water.mesh.scale.setScalar(1.8 + Math.random() * 0.5);
+            water.mesh.scale.setScalar(1.5 + Math.random() * 0.8);
           }
         }
 
@@ -671,23 +672,23 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
           if (p.stage === "river") {
             // Move along the river curve continuously
             p.riverProgress =
-              (p.riverProgress || 0) + 0.004 + Math.random() * 0.002;
+              (p.riverProgress || 0) + 0.005 + Math.random() * 0.003; // Faster flow
 
             if (p.riverProgress >= 1) {
               // Reached ocean - reset to start for continuous flow
-              p.riverProgress = 0;
+              p.riverProgress = Math.random() * 0.15; // Stagger respawns
             }
 
             if (riverCurve) {
               // Follow the smooth river curve
               const point = riverCurve.getPoint(p.riverProgress);
-              const offset = (Math.random() - 0.5) * 2;
+              const offset = (Math.random() - 0.5) * 2.5;
               p.position.set(
                 point.x + offset,
                 point.y +
-                  0.5 +
-                  Math.sin(Date.now() * 0.01 + p.riverProgress * 10) * 0.3,
-                point.z + offset * 0.3
+                  1 +
+                  Math.sin(Date.now() * 0.01 + p.riverProgress * 10) * 0.4,
+                point.z + offset * 0.4
               );
             }
 
@@ -695,7 +696,7 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
 
             // Shimmer effect for flowing water
             const shimmer =
-              0.9 + Math.sin(Date.now() * 0.008 + p.riverProgress * 20) * 0.1;
+              0.85 + Math.sin(Date.now() * 0.008 + p.riverProgress * 20) * 0.15;
             p.mesh.material.opacity = shimmer;
 
             // Color variation for sparkle - matching ocean tones
@@ -706,6 +707,17 @@ const WaterCycleScene = ({ isPlaying, cameraView, activeStep }) => {
               p.mesh.material.color.setHex(0x2878a8); // Medium ocean blue
             } else {
               p.mesh.material.color.setHex(0x1e6091); // Base ocean blue
+            }
+          } else if (p.stage === "collection" || p.stage === "ocean") {
+            // Ocean water - gentle bobbing motion
+            if (p.position.x > 35 || p.stage === "ocean") {
+              p.position.x = 45 + Math.random() * 40;
+              p.position.z = (Math.random() - 0.5) * 80;
+              p.position.y =
+                -0.3 + Math.sin(Date.now() * 0.003 + p.position.x * 0.15) * 0.2;
+              p.mesh.position.copy(p.position);
+              p.mesh.material.opacity = 0.85;
+              p.mesh.scale.setScalar(1.2);
             }
           }
         });

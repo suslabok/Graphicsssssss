@@ -1,6 +1,9 @@
 export const createWaterParticles = (THREE, scene, count = 200) => {
   const waterParticles = [];
   for (let i = 0; i < count; i++) {
+    // Assign some particles to river, most to ocean
+    const isRiverParticle = i < 50; // First 50 particles start in river
+
     const particle = {
       mesh: new THREE.Mesh(
         new THREE.SphereGeometry(0.35, 12, 12),
@@ -13,13 +16,20 @@ export const createWaterParticles = (THREE, scene, count = 200) => {
           reflectivity: 0.9,
         })
       ),
-      position: new THREE.Vector3(
-        Math.random() * 80 - 40,
-        -0.3,
-        Math.random() * 50 - 25
-      ),
+      position: isRiverParticle
+        ? new THREE.Vector3(
+            -50 + (i / 50) * 90, // Spread along river path
+            10 + Math.random() * 5,
+            (Math.random() - 0.5) * 8
+          )
+        : new THREE.Vector3(
+            45 + Math.random() * 40, // Ocean area
+            -0.3,
+            (Math.random() - 0.5) * 70
+          ),
       velocity: new THREE.Vector3(0, 0, 0),
-      stage: "collection",
+      stage: isRiverParticle ? "river" : "collection",
+      riverProgress: isRiverParticle ? i / 50 : 0,
       age: 0,
       maxAge: 800 + Math.random() * 400,
       shimmerPhase: Math.random() * Math.PI * 2, // For shimmer effect
@@ -27,6 +37,9 @@ export const createWaterParticles = (THREE, scene, count = 200) => {
     particle.mesh.position.copy(particle.position);
     particle.mesh.castShadow = true;
     particle.mesh.receiveShadow = true;
+    if (isRiverParticle) {
+      particle.mesh.scale.setScalar(1.5 + Math.random() * 0.5);
+    }
     scene.add(particle.mesh);
     waterParticles.push(particle);
   }
